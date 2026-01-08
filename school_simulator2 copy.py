@@ -60,10 +60,13 @@ class Block():
                 element.render(screen)
                 
 class Building():
-    def __init__(self, name, location=(0,0), dimensions=(0,0)):
+    def __init__(self, name, location=(0,0), dimensions=(0,0), connections=[], subject=None, rooms=[]):
         self.name = name
         self.location = location
         self.dimensions = dimensions
+        self.connections = connections
+        self.subject = subject
+        self.rooms = rooms
     def occupied(self, buildings):
         occupied = set()
         # Skip if building hasn't been placed yet (dimensions are 0)
@@ -121,19 +124,19 @@ class Building():
             occupied.update(building.occupied(buildings))
             reserved.update(building.reserved(buildings))
         # Find spawn point
-        rows = len(board_map)
-        cols = len(board_map[0])
-        spawn_row = None
+        cols = len(board_map)
+        rows = len(board_map[0])
         spawn_col = None
+        spawn_row = None
         # Using focus, find suitable spawn zone
         all_available = []
         start_row = focus * rows // 5
         end_row = min(focus + 1, 4) * rows // 5
-        for row in range(start_row, end_row + 1):
-            # Check each column in the zone
-            for col in range(cols):
+        # Check each column-row combination in zone
+        for col in range(cols):
+            for row in range(start_row, end_row + 1):
                 # Check if the tile is within the spawn bounds
-                if first_bound < board_map[row][col] < spawn_bound:
+                if first_bound < board_map[col][row] < spawn_bound:
                     # Check if the tile is not occupied or reserved (using col, row format)
                     if (col, row) not in occupied and (col, row) not in reserved:
                         all_available.append((col, row))  # (col, row) format
@@ -205,13 +208,13 @@ class Building():
             # add chances up:
             chance = 0
             for col, row in strip:  # (col, row) format
-                v = board_map[row][col]  # board_map is indexed [row][col]
+                v = board_map[col][row]  # board_map is indexed [col][row]
                 if v <= fourth_bound:
-                    chance += 5
-                elif v <= third_bound:
                     chance += 3
-                elif v <= second_bound:
+                elif v <= third_bound:
                     chance += 2
+                elif v <= second_bound:
+                    chance += 1
                 elif v <= first_bound:
                     chance += 0
                 else:
@@ -234,6 +237,41 @@ class Building():
         self.dimensions = ((reach_x_positive + reach_x_negative + 1), (reach_y_positive + reach_y_negative + 1))
         print(self.name, "has been generated")
         return self
+    def make_connections(self, buildings):
+        connections = []
+        def border_exists(building1, building2):
+            # Get borders of both buildings
+            building1_west = building1.location[0]
+            building1_east = building1.location[0] + building1.dimensions[0]
+            building1_north = building1.location[1]
+            building1_south = building1.location[1] + building1.dimensions[1]
+            
+            building2_west = building2.location[0]
+            building2_east = building2.location[0] + building2.dimensions[0]
+            building2_north = building2.location[1]
+            building2_south = building2.location[1] + building2.dimensions[1]
+            
+            if building1_north == building2_south:
+                if building1_west <= building2_east and building1_east >= building2_west or building2_west <= building1_east and building2_east >= building1_west:
+                    return True
+            elif building1_south == building2_north:
+                if building1_west <= building2_east and building1_east >= building2_west or building2_west <= building1_east and building2_east >= building1_west:
+                    return True
+            elif building1_west == building2_east:
+                if building1_north <= building2_south and building1_south >= building2_north or building2_north <= building1_south and building2_south >= building1_north:
+                    return True
+            elif building1_east == building2_west:
+                if building1_north <= building2_south and building1_south >= building2_north or building2_north <= building1_south and building2_south >= building1_north:
+                    return True
+            return False
+        # Make connections between THIS building and other buildings
+        for i in range(len(buildings)):
+            if border_exists(self, buildings[i]) and self != buildings[i]:
+                connections.append((buildings[i]))
+                print(f"Added connection between {self.name} and {buildings[i].name}")
+        return connections
+    def assign_building(self, possible_buildings):
+        pass
     def render(self, screen):
         pygame.draw.rect(screen, (150, 75, 25), (self.location[0]*10, self.location[1]*10,
                                               self.dimensions[0]*10, self.dimensions[1]*10))
@@ -255,18 +293,18 @@ class GreenSpace():
     def generate_green_space(self, board_map, green_spaces, buildings, retries=3):
         if retries <= 0:
             return self  # Give up after max retries
-        rows = len(board_map)
-        cols = len(board_map[0])
+        cols = len(board_map)
+        rows = len(board_map[0])
         total_occupied = set()
         for building in buildings:
             if building.dimensions[0] == 0 or building.dimensions[1] == 0:
                 continue  # Skip unplaced buildings
             # building.location[0] is col, building.location[1] is row
             # building.dimensions[0] is width (cols), building.dimensions[1] is height (rows)
-            for i in range(building.dimensions[0] + 8):  # width + 8 tile buffer
-                for j in range(building.dimensions[1] + 8):  # height + 8 tile buffer
-                    col = building.location[0] - 4 + i
-                    row = building.location[1] - 4 + j
+            for i in range(building.dimensions[0] + 6):  # width + 8 tile buffer
+                for j in range(building.dimensions[1] + 6):  # height + 8 tile buffer
+                    col = building.location[0] - 3 + i
+                    row = building.location[1] - 3 + j
                     if 0 <= col < cols and 0 <= row < rows:  # Bounds check
                         total_occupied.add((col, row))  # (col, row) format
         for green_space in green_spaces:
@@ -344,11 +382,11 @@ class GreenSpace():
                                               self.dimensions[0]*10, self.dimensions[1]*10))
 
 def gen_board(grid_size, scale):
-    rows, cols = grid_size
+    cols, rows = grid_size
     seed = randint(0, 100)
-    board_map = [[float(pnoise2(r/scale, c/scale, octaves=2, persistence=0.25,
+    board_map = [[float(pnoise2(c/scale, r/scale, octaves=2, persistence=0.25,
                               lacunarity=1.5, base=seed)+1)/2 
-            for c in range(cols)] for r in range(rows)]
+            for r in range(rows)] for c in range(cols)]
     return board_map
 
 
@@ -510,7 +548,7 @@ def create_buildings(board_map):
     return buildings
 '''           
 
-def create_buildings(board_map):
+def place_buildings(board_map):
     buildings = []
     for i in range(20):
         buildings.append(Building(name=f"Building {i}"))
@@ -551,17 +589,29 @@ def create_buildings(board_map):
                 overpopulated[i] = True
         return overpopulated
          # no remaining spots
+    to_remove = []
     for building in buildings:
         building.generate_building(board_map, buildings, get_zones(buildings, board_map))
+        if building.dimensions[0] == 0 or building.dimensions[1] == 0:
+            to_remove.append(building)
+    for building in to_remove:
+        buildings.remove(building) # remove building from list
     return buildings
 
-def create_green_spaces(board_map, buildings):
+def place_green_spaces(board_map, buildings):
     green_spaces = []
-    for i in range(10):
+    for i in range(randint(10, 15)):
         green_spaces.append(GreenSpace(name=f"Green Space {i}", location=(0, 0), dimensions=(0, 0)))
     for green_space in green_spaces:
         green_space.generate_green_space(board_map, green_spaces, buildings)
     return green_spaces
+
+def connect_buildings(buildings):
+    for building in buildings:
+        building.make_connections(buildings)
+    return buildings
+
+# Draw the board
 def draw_board(screen, structures):
     screen.fill((70, 70, 70))
     buildings = structures[0]
@@ -569,13 +619,6 @@ def draw_board(screen, structures):
     scale = 1
 
     # Building set-up
-    for building in buildings:
-        x = (building.location[0]*10-10) / scale
-        y = (building.location[1]*10-10) / scale
-        width = (building.dimensions[0]*10+20) / scale
-        height = (building.dimensions[1]*10+20) / scale
-        pygame.draw.rect(screen, (150, 150, 150), (x, y, width, height))
-    index = 0
     for building in buildings:
         building.render(screen)
     for green_space in green_spaces:
@@ -591,11 +634,19 @@ screen = pygame.display.set_mode((750, 750))
 pygame.display.set_caption("Campus")
 clock = pygame.time.Clock()
 
+def initialize_game():
+    global buildings, green_spaces, structures, heat_map
+    # Place all structures
+    heat_map = gen_board((75, 75), 6)
+    buildings = place_buildings(heat_map)
+    green_spaces = place_green_spaces(heat_map, buildings)
+    structures = [buildings, green_spaces]
 
-heat_map = gen_board((75, 75), 6)
-buildings = create_buildings(heat_map)
-green_spaces = create_green_spaces(heat_map, buildings)
-structures = [buildings, green_spaces]
+    # Further information about buildings
+    connect_buildings(buildings)
+
+    return structures
+structures = initialize_game()
 running = True
 
 while running:
@@ -609,9 +660,7 @@ while running:
         
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                buildings = create_buildings(heat_map)
-                green_spaces = create_green_spaces(heat_map, buildings)
-                structures = [buildings, green_spaces]
+                structures = initialize_game()
         # check click
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()

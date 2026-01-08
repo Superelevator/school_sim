@@ -1,0 +1,692 @@
+{
+  "subjects": {
+    "Science": [
+      {
+        "name": "Rosemary Sciences Building",
+        "subjects": [
+          "Science"
+        ],
+        "structure": ""
+      },
+      {
+        "name": "Carter Building",
+        "subjects": [
+          "English",
+          "Math",
+          "Science",
+          "History",
+          "Computer Science"
+        ]
+      },
+      {
+        "name": "Hasting Building",
+        "subjects": [
+          "Math",
+          "Science",
+          "English",
+          "History"
+        ]
+      },
+      {
+        "name": "Marshall Center",
+        "subjects": [
+          "Science",
+          "Math"
+        ]
+      },
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Sycamore Building",
+        "subjects": [
+          "Math",
+          "Science",
+          "Computer Science"
+        ]
+      },
+      {
+        "name": "Learning Center",
+        "subjects": [
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language"
+        ]
+      }
+    ],
+    "PE": [
+      {
+        "name": "Redding Gym",
+        "subjects": [
+          "PE"
+        ]
+      },
+      {
+        "name": "Dixon Center",
+        "subjects": [
+          "PE"
+        ]
+      },
+      {
+        "name": "Central Gym",
+        "subjects": [
+          "PE"
+        ]
+      },
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Carson Gym",
+        "subjects": [
+          "PE"
+        ]
+      },
+      {
+        "name": "Pride Stadium",
+        "subjects": [
+          "PE"
+        ]
+      }
+    ],
+    "English": [
+      {
+        "name": "Carter Building",
+        "subjects": [
+          "English",
+          "Math",
+          "Science",
+          "History",
+          "Computer Science"
+        ]
+      },
+      {
+        "name": "Hasting Building",
+        "subjects": [
+          "Math",
+          "Science",
+          "English",
+          "History"
+        ]
+      },
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Martha Building",
+        "subjects": [
+          "Music",
+          "English",
+          "History",
+          "Language"
+        ]
+      },
+      {
+        "name": "Charter Building",
+        "subjects": [
+          "English",
+          "History",
+          "Language",
+          "Music"
+        ]
+      },
+      {
+        "name": "Prairie Building",
+        "subjects": [
+          "English",
+          "History",
+          "Language",
+          "Music"
+        ]
+      },
+      {
+        "name": "Learning Center",
+        "subjects": [
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language"
+        ]
+      }
+    ],
+    "Math": [
+      {
+        "name": "Carter Building",
+        "subjects": [
+          "English",
+          "Math",
+          "Science",
+          "History",
+          "Computer Science"
+        ]
+      },
+      {
+        "name": "Hasting Building",
+        "subjects": [
+          "Math",
+          "Science",
+          "English",
+          "History"
+        ]
+      },
+      {
+        "name": "Marshall Center",
+        "subjects": [
+          "Science",
+          "Math"
+        ]
+      },
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Sycamore Building",
+        "subjects": [
+          "Math",
+          "Science",
+          "Computer Science"
+        ]
+      },
+      {
+        "name": "Learning Center",
+        "subjects": [
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language"
+        ]
+      }
+    ],
+    "History": [
+      {
+        "name": "Carter Building",
+        "subjects": [
+          "English",
+          "Math",
+          "Science",
+          "History",
+          "Computer Science"
+        ]
+      },
+      {
+        "name": "Hasting Building",
+        "subjects": [
+          "Math",
+          "Science",
+          "English",
+          "History"
+        ]
+      },
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Martha Building",
+        "subjects": [
+          "Music",
+          "English",
+          "History",
+          "Language"
+        ]
+      },
+      {
+        "name": "Charter Building",
+        "subjects": [
+          "English",
+          "History",
+          "Language",
+          "Music"
+        ]
+      },
+      {
+        "name": "Prairie Building",
+        "subjects": [
+          "English",
+          "History",
+          "Language",
+          "Music"
+        ]
+      },
+      {
+        "name": "Learning Center",
+        "subjects": [
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language"
+        ]
+      }
+    ],
+    "Language": [
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Martha Building",
+        "subjects": [
+          "Music",
+          "English",
+          "History",
+          "Language"
+        ]
+      },
+      {
+        "name": "Charter Building",
+        "subjects": [
+          "English",
+          "History",
+          "Language",
+          "Music"
+        ]
+      },
+      {
+        "name": "Prairie Building",
+        "subjects": [
+          "English",
+          "History",
+          "Language",
+          "Music"
+        ]
+      },
+      {
+        "name": "Learning Center",
+        "subjects": [
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language"
+        ]
+      }
+    ],
+    "Music": [
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Patrick Hall",
+        "subjects": [
+          "Music"
+        ]
+      },
+      {
+        "name": "Martha Building",
+        "subjects": [
+          "Music",
+          "English",
+          "History",
+          "Language"
+        ]
+      },
+      {
+        "name": "Charter Building",
+        "subjects": [
+          "English",
+          "History",
+          "Language",
+          "Music"
+        ]
+      },
+      {
+        "name": "Prairie Building",
+        "subjects": [
+          "English",
+          "History",
+          "Language",
+          "Music"
+        ]
+      },
+      {
+        "name": "Performing Arts Hall",
+        "subjects": [
+          "Theater",
+          "Music"
+        ]
+      },
+      {
+        "name": "Art Center",
+        "subjects": [
+          "Art",
+          "Music",
+          "Theater"
+        ]
+      },
+      {
+        "name": "Frescoes Center",
+        "subjects": [
+          "Art",
+          "Music",
+          "Theater"
+        ]
+      },
+      {
+        "name": "Hudson Hall",
+        "subjects": [
+          "Theater",
+          "Music",
+          "Art"
+        ]
+      }
+    ],
+    "Theater": [
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Performing Arts Hall",
+        "subjects": [
+          "Theater",
+          "Music"
+        ]
+      },
+      {
+        "name": "Art Center",
+        "subjects": [
+          "Art",
+          "Music",
+          "Theater"
+        ]
+      },
+      {
+        "name": "Frescoes Center",
+        "subjects": [
+          "Art",
+          "Music",
+          "Theater"
+        ]
+      },
+      {
+        "name": "Hudson Hall",
+        "subjects": [
+          "Theater",
+          "Music",
+          "Art"
+        ]
+      }
+    ],
+    "Library": [
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Lumen Library",
+        "subjects": [
+          "Library"
+        ]
+      },
+      {
+        "name": "Reading Library",
+        "subjects": [
+          "Library"
+        ]
+      },
+      {
+        "name": "Study Hall",
+        "subjects": [
+          "Library"
+        ]
+      },
+      {
+        "name": "Bell Library",
+        "subjects": [
+          "Library"
+        ]
+      }
+    ],
+    "Cafeteria": [
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Mess Hall",
+        "subjects": [
+          "Cafeteria"
+        ]
+      },
+      {
+        "name": "Steiner Hall",
+        "subjects": [
+          "Cafeteria"
+        ]
+      },
+      {
+        "name": "Exploration Hall",
+        "subjects": [
+          "Cafeteria"
+        ]
+      },
+      {
+        "name": "Springdale Cafeteria",
+        "subjects": [
+          "Cafeteria"
+        ]
+      }
+    ],
+    "Computer Science": [
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Carter Building",
+        "subjects": [
+          "English",
+          "Math",
+          "Science",
+          "History",
+          "Computer Science"
+        ]
+      },
+      {
+        "name": "Sycamore Building",
+        "subjects": [
+          "Math",
+          "Science",
+          "Computer Science"
+        ]
+      }
+    ],
+    "Art": [
+      {
+        "name": "Art Center",
+        "subjects": [
+          "Art",
+          "Music",
+          "Theater"
+        ]
+      },
+      {
+        "name": "Founder's Complex",
+        "subjects": [
+          "PE",
+          "Math",
+          "Science",
+          "History",
+          "English",
+          "Language",
+          "Music",
+          "Theater",
+          "Library",
+          "Cafeteria",
+          "Computer Science",
+          "Art"
+        ]
+      },
+      {
+        "name": "Frescoes Center",
+        "subjects": [
+          "Art",
+          "Music",
+          "Theater"
+        ]
+      },
+      {
+        "name": "Hudson Hall",
+        "subjects": [
+          "Theater",
+          "Music",
+          "Art"
+        ]
+      }
+    ]
+  },
+  "no_subject": []
+}
