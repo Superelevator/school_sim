@@ -1,690 +1,1303 @@
 {
   "subjects": {
     "Science": [
-      {
-        "name": "Rosemary Sciences Building",
-        "subjects": [
-          "Science"
-        ],
-        "structure": ""
+    {
+      "name": "Rosemary Sciences Building",
+        "subjects": ["Science"]
       },
       {
         "name": "Carter Building",
-        "subjects": [
-          "English",
-          "Math",
-          "Science",
-          "History",
-          "Computer Science"
-        ]
+        "subjects": ["English", "Math", "Science", "History", "Computer Science"]
       },
       {
         "name": "Hasting Building",
-        "subjects": [
-          "Math",
-          "Science",
-          "English",
-          "History"
-        ]
+        "subjects": ["Math", "Science", "English", "History"]
       },
       {
         "name": "Marshall Center",
-        "subjects": [
-          "Science",
-          "Math"
-        ]
+        "subjects": ["Science", "Math"]
       },
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Sycamore Building",
-        "subjects": [
-          "Math",
-          "Science",
-          "Computer Science"
-        ]
+        "subjects": ["Math", "Science", "Computer Science"]
       },
       {
         "name": "Learning Center",
-        "subjects": [
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language"
-        ]
+        "subjects": ["Math", "Science", "History", "English", "Language"]
+      },
+      {
+        "name": "Rhode Building",
+        "subjects": ["Science", "Math", "Computer Science"]
+      },
+      {
+        "name": "Westbrook Laboratory",
+        "subjects": ["Science"]
+      },
+      {
+        "name": "Thompson Research Hall",
+        "subjects": ["Science", "Math"]
+      },
+      {
+        "name": "Anderson Building",
+        "subjects": ["Science"]
+      },
+      {
+        "name": "Johnson Hall",
+        "subjects": ["Science", "Math"]
+      },
+      {
+        "name": "Williams Center",
+        "subjects": ["Science"]
+      },
+      {
+        "name": "Brown Building",
+        "subjects": ["Science", "Computer Science"]
+      },
+      {
+        "name": "Jones Hall",
+        "subjects": ["Science", "Math", "History"]
+      },
+      {
+        "name": "Garcia Center",
+        "subjects": ["Science", "English", "Math"]
+      },
+      {
+        "name": "Miller Building",
+        "subjects": ["Science"]
+      },
+      {
+        "name": "Davis Hall",
+        "subjects": ["Science"]
+      },
+      {
+        "name": "Rodriguez Center",
+        "subjects": ["Science", "Computer Science"]
+      },
+      {
+        "name": "Martinez Building",
+        "subjects": ["Science", "Math", "History"]
+      },
+      {
+        "name": "Hernandez Hall",
+        "subjects": ["Science", "English"]
+      },
+      {
+        "name": "Lopez Center",
+        "subjects": ["Science"]
+      },
+      {
+        "name": "Wilson Building",
+        "subjects": ["Science", "Math"]
+      },
+      {
+        "name": "Anderson Hall",
+        "subjects": ["Science"]
+      },
+      {
+        "name": "Moore Center",
+        "subjects": ["Science", "History", "English"]
+      },
+      {
+        "name": "Taylor Building",
+        "subjects": ["Science", "Math", "Computer Science"]
+      },
+      {
+        "name": "Thomas Hall",
+        "subjects": ["Science"]
       }
     ],
     "PE": [
       {
         "name": "Redding Gym",
-        "subjects": [
-          "PE"
-        ]
+        "subjects": ["PE"]
       },
       {
         "name": "Dixon Center",
-        "subjects": [
-          "PE"
-        ]
+        "subjects": ["PE"]
       },
       {
         "name": "Central Gym",
-        "subjects": [
-          "PE"
-        ]
+        "subjects": ["PE"]
       },
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Carson Gym",
-        "subjects": [
-          "PE"
-        ]
+        "subjects": ["PE"]
       },
       {
         "name": "Pride Stadium",
-        "subjects": [
-          "PE"
-        ]
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Jackson Gymnasium",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "White Center",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Harris Building",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Martin Hall",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Thompson Center",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Garcia Gym",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Martinez Building",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Robinson Hall",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Clark Center",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Rodriguez Gymnasium",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Lewis Building",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Lee Hall",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Walker Center",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Hall Gym",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Allen Building",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Young Hall",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "King Center",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Wright Building",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Lopez Gymnasium",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Hill Center",
+        "subjects": ["PE"]
+      },
+      {
+        "name": "Scott Building",
+        "subjects": ["PE"]
       }
     ],
     "English": [
       {
         "name": "Carter Building",
-        "subjects": [
-          "English",
-          "Math",
-          "Science",
-          "History",
-          "Computer Science"
-        ]
+        "subjects": ["English", "Math", "Science", "History", "Computer Science"]
       },
       {
         "name": "Hasting Building",
-        "subjects": [
-          "Math",
-          "Science",
-          "English",
-          "History"
-        ]
+        "subjects": ["Math", "Science", "English", "History"]
       },
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Martha Building",
-        "subjects": [
-          "Music",
-          "English",
-          "History",
-          "Language"
-        ]
+        "subjects": ["Music", "English", "History", "Language"]
       },
       {
         "name": "Charter Building",
-        "subjects": [
-          "English",
-          "History",
-          "Language",
-          "Music"
-        ]
+        "subjects": ["English", "History", "Language", "Music"]
       },
       {
         "name": "Prairie Building",
-        "subjects": [
-          "English",
-          "History",
-          "Language",
-          "Music"
-        ]
+        "subjects": ["English", "History", "Language", "Music"]
       },
       {
         "name": "Learning Center",
-        "subjects": [
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language"
-        ]
+        "subjects": ["Math", "Science", "History", "English", "Language"]
+      },
+      {
+        "name": "Greenwood Hall",
+        "subjects": ["Science", "English", "Math"]
+      },
+      {
+        "name": "Valleyview Building",
+        "subjects": ["Science", "History", "English"]
+      },
+      {
+        "name": "Brookside Hall",
+        "subjects": ["Science", "English"]
+      },
+      {
+        "name": "Adams Hall",
+        "subjects": ["English", "History"]
+      },
+      {
+        "name": "Baker Building",
+        "subjects": ["English"]
+      },
+      {
+        "name": "Nelson Center",
+        "subjects": ["English", "Language"]
+      },
+      {
+        "name": "Carter Hall",
+        "subjects": ["English", "Library"]
+      },
+      {
+        "name": "Mitchell Building",
+        "subjects": ["English", "Language"]
+      },
+      {
+        "name": "Perez Center",
+        "subjects": ["English", "Theater"]
+      },
+      {
+        "name": "Roberts Hall",
+        "subjects": ["English", "History", "Language"]
+      },
+      {
+        "name": "Turner Building",
+        "subjects": ["English"]
+      },
+      {
+        "name": "Phillips Center",
+        "subjects": ["English", "Library"]
+      },
+      {
+        "name": "Campbell Hall",
+        "subjects": ["English", "Language"]
+      },
+      {
+        "name": "Parker Building",
+        "subjects": ["English", "History"]
+      },
+      {
+        "name": "Evans Center",
+        "subjects": ["English"]
+      },
+      {
+        "name": "Edwards Hall",
+        "subjects": ["English", "Language"]
+      },
+      {
+        "name": "Collins Building",
+        "subjects": ["English", "Theater"]
+      },
+      {
+        "name": "Stewart Center",
+        "subjects": ["English", "History", "Language"]
+      },
+      {
+        "name": "Sanchez Hall",
+        "subjects": ["English"]
+      },
+      {
+        "name": "Morris Building",
+        "subjects": ["English"]
       }
     ],
     "Math": [
       {
         "name": "Carter Building",
-        "subjects": [
-          "English",
-          "Math",
-          "Science",
-          "History",
-          "Computer Science"
-        ]
+        "subjects": ["English", "Math", "Science", "History", "Computer Science"]
       },
       {
         "name": "Hasting Building",
-        "subjects": [
-          "Math",
-          "Science",
-          "English",
-          "History"
-        ]
+        "subjects": ["Math", "Science", "English", "History"]
       },
       {
         "name": "Marshall Center",
-        "subjects": [
-          "Science",
-          "Math"
-        ]
+        "subjects": ["Science", "Math"]
       },
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Sycamore Building",
-        "subjects": [
-          "Math",
-          "Science",
-          "Computer Science"
-        ]
+        "subjects": ["Math", "Science", "Computer Science"]
       },
       {
         "name": "Learning Center",
-        "subjects": [
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language"
-        ]
+        "subjects": ["Math", "Science", "History", "English", "Language"]
+      },
+      {
+        "name": "Rhode Building",
+        "subjects": ["Science", "Math", "Computer Science"]
+      },
+      {
+        "name": "Thompson Research Hall",
+        "subjects": ["Science", "Math"]
+      },
+      {
+        "name": "Summit Building",
+        "subjects": ["Science", "Math", "History"]
+      },
+      {
+        "name": "Greenwood Hall",
+        "subjects": ["Science", "English", "Math"]
+      },
+      {
+        "name": "Hillcrest Building",
+        "subjects": ["Science", "Math", "History"]
+      },
+      {
+        "name": "Parkview Sciences",
+        "subjects": ["Science", "Math"]
+      },
+      {
+        "name": "Sunset Hall",
+        "subjects": ["Science", "Math", "Computer Science"]
+      },
+      {
+        "name": "Rogers Hall",
+        "subjects": ["Math", "Computer Science"]
+      },
+      {
+        "name": "Reed Building",
+        "subjects": ["Math"]
+      },
+      {
+        "name": "Cook Center",
+        "subjects": ["Math", "Computer Science"]
+      },
+      {
+        "name": "Morgan Hall",
+        "subjects": ["Math", "Science"]
+      },
+      {
+        "name": "Bell Building",
+        "subjects": ["Math"]
+      },
+      {
+        "name": "Murphy Center",
+        "subjects": ["Math", "Computer Science"]
+      },
+      {
+        "name": "Bailey Hall",
+        "subjects": ["Math", "Science", "Computer Science"]
+      },
+      {
+        "name": "Rivera Building",
+        "subjects": ["Math"]
+      },
+      {
+        "name": "Cooper Center",
+        "subjects": ["Math", "Computer Science"]
+      },
+      {
+        "name": "Richardson Hall",
+        "subjects": ["Math", "Science"]
+      },
+      {
+        "name": "Cox Building",
+        "subjects": ["Math"]
+      },
+      {
+        "name": "Howard Center",
+        "subjects": ["Math", "Science", "Computer Science"]
+      },
+      {
+        "name": "Ward Hall",
+        "subjects": ["Math"]
+      },
+      {
+        "name": "Torres Building",
+        "subjects": ["Math"]
       }
     ],
     "History": [
       {
         "name": "Carter Building",
-        "subjects": [
-          "English",
-          "Math",
-          "Science",
-          "History",
-          "Computer Science"
-        ]
+        "subjects": ["English", "Math", "Science", "History", "Computer Science"]
       },
       {
         "name": "Hasting Building",
-        "subjects": [
-          "Math",
-          "Science",
-          "English",
-          "History"
-        ]
+        "subjects": ["Math", "Science", "English", "History"]
       },
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Martha Building",
-        "subjects": [
-          "Music",
-          "English",
-          "History",
-          "Language"
-        ]
+        "subjects": ["Music", "English", "History", "Language"]
       },
       {
         "name": "Charter Building",
-        "subjects": [
-          "English",
-          "History",
-          "Language",
-          "Music"
-        ]
+        "subjects": ["English", "History", "Language", "Music"]
       },
       {
         "name": "Prairie Building",
-        "subjects": [
-          "English",
-          "History",
-          "Language",
-          "Music"
-        ]
+        "subjects": ["English", "History", "Language", "Music"]
       },
       {
         "name": "Learning Center",
-        "subjects": [
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language"
-        ]
+        "subjects": ["Math", "Science", "History", "English", "Language"]
+      },
+      {
+        "name": "Summit Building",
+        "subjects": ["Science", "Math", "History"]
+      },
+      {
+        "name": "Hillcrest Building",
+        "subjects": ["Science", "Math", "History"]
+      },
+      {
+        "name": "Valleyview Building",
+        "subjects": ["Science", "History", "English"]
+      },
+      {
+        "name": "Adams Hall",
+        "subjects": ["English", "History"]
+      },
+      {
+        "name": "Peterson Hall",
+        "subjects": ["History"]
+      },
+      {
+        "name": "Gray Center",
+        "subjects": ["History", "English"]
+      },
+      {
+        "name": "Ramirez Building",
+        "subjects": ["History", "Library"]
+      },
+      {
+        "name": "James Hall",
+        "subjects": ["History", "Language", "Art"]
+      },
+      {
+        "name": "Watson Center",
+        "subjects": ["History"]
+      },
+      {
+        "name": "Brooks Building",
+        "subjects": ["History"]
+      },
+      {
+        "name": "Kelly Hall",
+        "subjects": ["History"]
+      },
+      {
+        "name": "Sanders Center",
+        "subjects": ["History", "Language", "Art"]
+      },
+      {
+        "name": "Price Building",
+        "subjects": ["History", "Library"]
+      },
+      {
+        "name": "Bennett Hall",
+        "subjects": ["History", "English"]
+      },
+      {
+        "name": "Wood Center",
+        "subjects": ["History"]
+      },
+      {
+        "name": "Barnes Building",
+        "subjects": ["History"]
+      },
+      {
+        "name": "Ross Hall",
+        "subjects": ["History", "Language", "Art"]
+      },
+      {
+        "name": "Henderson Center",
+        "subjects": ["History", "Library"]
+      },
+      {
+        "name": "Coleman Building",
+        "subjects": ["History"]
+      },
+      {
+        "name": "Jenkins Hall",
+        "subjects": ["History"]
       }
     ],
     "Language": [
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Martha Building",
-        "subjects": [
-          "Music",
-          "English",
-          "History",
-          "Language"
-        ]
+        "subjects": ["Music", "English", "History", "Language"]
       },
       {
         "name": "Charter Building",
-        "subjects": [
-          "English",
-          "History",
-          "Language",
-          "Music"
-        ]
+        "subjects": ["English", "History", "Language", "Music"]
       },
       {
         "name": "Prairie Building",
-        "subjects": [
-          "English",
-          "History",
-          "Language",
-          "Music"
-        ]
+        "subjects": ["English", "History", "Language", "Music"]
       },
       {
         "name": "Learning Center",
-        "subjects": [
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language"
-        ]
+        "subjects": ["Math", "Science", "History", "English", "Language"]
+      },
+      {
+        "name": "Nelson Center",
+        "subjects": ["English", "Language"]
+      },
+      {
+        "name": "Mitchell Building",
+        "subjects": ["English", "Language"]
+      },
+      {
+        "name": "Roberts Hall",
+        "subjects": ["English", "History", "Language"]
+      },
+      {
+        "name": "Campbell Hall",
+        "subjects": ["English", "Language"]
+      },
+      {
+        "name": "Edwards Hall",
+        "subjects": ["English", "Language"]
+      },
+      {
+        "name": "Stewart Center",
+        "subjects": ["English", "History", "Language"]
+      },
+      {
+        "name": "James Hall",
+        "subjects": ["History", "Language", "Art"]
+      },
+      {
+        "name": "Sanders Center",
+        "subjects": ["History", "Language", "Art"]
+      },
+      {
+        "name": "Ross Hall",
+        "subjects": ["History", "Language", "Art"]
+      },
+      {
+        "name": "Powell Building",
+        "subjects": ["Language"]
+      },
+      {
+        "name": "Long Center",
+        "subjects": ["Language"]
+      },
+      {
+        "name": "Patterson Hall",
+        "subjects": ["Language", "English"]
+      },
+      {
+        "name": "Hughes Building",
+        "subjects": ["Language"]
+      },
+      {
+        "name": "Flores Center",
+        "subjects": ["Language", "History"]
+      },
+      {
+        "name": "Washington Hall",
+        "subjects": ["Language"]
+      },
+      {
+        "name": "Butler Building",
+        "subjects": ["Language"]
+      },
+      {
+        "name": "Simmons Center",
+        "subjects": ["Language", "English"]
+      },
+      {
+        "name": "Foster Hall",
+        "subjects": ["Language", "English"]
+      },
+      {
+        "name": "Gonzales Building",
+        "subjects": ["Language"]
+      },
+      {
+        "name": "Bryant Center",
+        "subjects": ["Language"]
+      },
+      {
+        "name": "Alexander Hall",
+        "subjects": ["Language"]
       }
     ],
     "Music": [
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Patrick Hall",
-        "subjects": [
-          "Music"
-        ]
+        "subjects": ["Music"]
       },
       {
         "name": "Martha Building",
-        "subjects": [
-          "Music",
-          "English",
-          "History",
-          "Language"
-        ]
+        "subjects": ["Music", "English", "History", "Language"]
       },
       {
         "name": "Charter Building",
-        "subjects": [
-          "English",
-          "History",
-          "Language",
-          "Music"
-        ]
+        "subjects": ["English", "History", "Language", "Music"]
       },
       {
         "name": "Prairie Building",
-        "subjects": [
-          "English",
-          "History",
-          "Language",
-          "Music"
-        ]
+        "subjects": ["English", "History", "Language", "Music"]
       },
       {
         "name": "Performing Arts Hall",
-        "subjects": [
-          "Theater",
-          "Music"
-        ]
+        "subjects": ["Theater", "Music"]
       },
       {
         "name": "Art Center",
-        "subjects": [
-          "Art",
-          "Music",
-          "Theater"
-        ]
+        "subjects": ["Art", "Music", "Theater"]
       },
       {
         "name": "Frescoes Center",
-        "subjects": [
-          "Art",
-          "Music",
-          "Theater"
-        ]
+        "subjects": ["Art", "Music", "Theater"]
       },
       {
         "name": "Hudson Hall",
-        "subjects": [
-          "Theater",
-          "Music",
-          "Art"
-        ]
+        "subjects": ["Theater", "Music", "Art"]
+      },
+      {
+        "name": "Belle Center",
+        "subjects": ["Music", "Art"]
+      },
+      {
+        "name": "Griffin Hall",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Diaz Center",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Hayes Building",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Myers Hall",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Ford Center",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Hamilton Building",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Graham Hall",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Sullivan Center",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Wallace Building",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Woods Hall",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Cole Center",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "West Building",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Jordan Hall",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Owens Center",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Reynolds Building",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Fisher Hall",
+        "subjects": ["Music"]
+      },
+      {
+        "name": "Ellis Center",
+        "subjects": ["Music"]
       }
     ],
     "Theater": [
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Performing Arts Hall",
-        "subjects": [
-          "Theater",
-          "Music"
-        ]
+        "subjects": ["Theater", "Music"]
       },
       {
         "name": "Art Center",
-        "subjects": [
-          "Art",
-          "Music",
-          "Theater"
-        ]
+        "subjects": ["Art", "Music", "Theater"]
       },
       {
         "name": "Frescoes Center",
-        "subjects": [
-          "Art",
-          "Music",
-          "Theater"
-        ]
+        "subjects": ["Art", "Music", "Theater"]
       },
       {
         "name": "Hudson Hall",
-        "subjects": [
-          "Theater",
-          "Music",
-          "Art"
-        ]
+        "subjects": ["Theater", "Music", "Art"]
+      },
+      {
+        "name": "Perez Center",
+        "subjects": ["English", "Theater"]
+      },
+      {
+        "name": "Collins Building",
+        "subjects": ["English", "Theater"]
+      },
+      {
+        "name": "Harrison Hall",
+        "subjects": ["Music", "Theater"]
+      },
+      {
+        "name": "Gibson Center",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Mcdonald Building",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Cruz Hall",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Marshall Center",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Ortiz Building",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Gomez Hall",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Murray Center",
+        "subjects": ["Theater", "Music"]
+      },
+      {
+        "name": "Freeman Building",
+        "subjects": ["Theater", "Art"]
+      },
+      {
+        "name": "Wells Hall",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Webb Center",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Simpson Building",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Stevens Hall",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Tucker Center",
+        "subjects": ["Theater", "Music"]
+      },
+      {
+        "name": "Porter Building",
+        "subjects": ["Theater", "Art"]
+      },
+      {
+        "name": "Hunter Hall",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Hicks Center",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Crawford Building",
+        "subjects": ["Theater"]
+      },
+      {
+        "name": "Henry Hall",
+        "subjects": ["Theater"]
       }
     ],
     "Library": [
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Lumen Library",
-        "subjects": [
-          "Library"
-        ]
+        "subjects": ["Library"]
       },
       {
         "name": "Reading Library",
-        "subjects": [
-          "Library"
-        ]
+        "subjects": ["Library"]
       },
       {
         "name": "Study Hall",
-        "subjects": [
-          "Library"
-        ]
+        "subjects": ["Library"]
       },
       {
         "name": "Bell Library",
-        "subjects": [
-          "Library"
-        ]
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Carter Hall",
+        "subjects": ["English", "Library"]
+      },
+      {
+        "name": "Phillips Center",
+        "subjects": ["English", "Library"]
+      },
+      {
+        "name": "Ramirez Building",
+        "subjects": ["History", "Library"]
+      },
+      {
+        "name": "Price Building",
+        "subjects": ["History", "Library"]
+      },
+      {
+        "name": "Henderson Center",
+        "subjects": ["History", "Library"]
+      },
+      {
+        "name": "Boyd Library",
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Mason Center",
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Morales Building",
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Kennedy Hall",
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Warren Center",
+        "subjects": ["Library", "Computer Science"]
+      },
+      {
+        "name": "Dixon Building",
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Ramos Hall",
+        "subjects": ["Library", "Computer Science"]
+      },
+      {
+        "name": "Reyes Center",
+        "subjects": ["Library", "Computer Science"]
+      },
+      {
+        "name": "Burns Building",
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Gordon Hall",
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Shaw Center",
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Holmes Building",
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Rice Hall",
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Robertson Center",
+        "subjects": ["Library", "Computer Science"]
+      },
+      {
+        "name": "Hunt Building",
+        "subjects": ["Library"]
+      },
+      {
+        "name": "Black Hall",
+        "subjects": ["Library"]
       }
     ],
     "Cafeteria": [
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Mess Hall",
-        "subjects": [
-          "Cafeteria"
-        ]
+        "subjects": ["Cafeteria"]
       },
       {
         "name": "Steiner Hall",
-        "subjects": [
-          "Cafeteria"
-        ]
+        "subjects": ["Cafeteria"]
       },
       {
         "name": "Exploration Hall",
-        "subjects": [
-          "Cafeteria"
-        ]
+        "subjects": ["Cafeteria"]
       },
       {
         "name": "Springdale Cafeteria",
-        "subjects": [
-          "Cafeteria"
-        ]
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Palmer Hall",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Mills Center",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Nichols Building",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Grant Hall",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Knight Center",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Ferguson Building",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Rose Hall",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Stone Center",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Hawkins Building",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Dunn Hall",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Perkins Center",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Hudson Building",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Spencer Hall",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Gardner Center",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Stephens Building",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Payne Hall",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Pierce Center",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Berry Building",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Matthews Hall",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Arnold Center",
+        "subjects": ["Cafeteria"]
+      },
+      {
+        "name": "Wagner Building",
+        "subjects": ["Cafeteria"]
       }
     ],
     "Computer Science": [
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Carter Building",
-        "subjects": [
-          "English",
-          "Math",
-          "Science",
-          "History",
-          "Computer Science"
-        ]
+        "subjects": ["English", "Math", "Science", "History", "Computer Science"]
       },
       {
         "name": "Sycamore Building",
-        "subjects": [
-          "Math",
-          "Science",
-          "Computer Science"
-        ]
+        "subjects": ["Math", "Science", "Computer Science"]
+      },
+      {
+        "name": "Rhode Building",
+        "subjects": ["Science", "Math", "Computer Science"]
+      },
+      {
+        "name": "Brown Building",
+        "subjects": ["Science", "Computer Science"]
+      },
+      {
+        "name": "Rodriguez Center",
+        "subjects": ["Science", "Computer Science"]
+      },
+      {
+        "name": "Sunset Hall",
+        "subjects": ["Science", "Math", "Computer Science"]
+      },
+      {
+        "name": "Rogers Hall",
+        "subjects": ["Math", "Computer Science"]
+      },
+      {
+        "name": "Cook Center",
+        "subjects": ["Math", "Computer Science"]
+      },
+      {
+        "name": "Murphy Center",
+        "subjects": ["Math", "Computer Science"]
+      },
+      {
+        "name": "Bailey Hall",
+        "subjects": ["Math", "Science", "Computer Science"]
+      },
+      {
+        "name": "Cooper Center",
+        "subjects": ["Math", "Computer Science"]
+      },
+      {
+        "name": "Howard Center",
+        "subjects": ["Math", "Science", "Computer Science"]
+      },
+      {
+        "name": "Warren Center",
+        "subjects": ["Library", "Computer Science"]
+      },
+      {
+        "name": "Ramos Hall",
+        "subjects": ["Library", "Computer Science"]
+      },
+      {
+        "name": "Reyes Center",
+        "subjects": ["Library", "Computer Science"]
+      },
+      {
+        "name": "Robertson Center",
+        "subjects": ["Library", "Computer Science"]
+      },
+      {
+        "name": "Barnes Building",
+        "subjects": ["Computer Science"]
+      },
+      {
+        "name": "Fisher Center",
+        "subjects": ["Computer Science"]
+      },
+      {
+        "name": "Henderson Hall",
+        "subjects": ["Computer Science"]
+      },
+      {
+        "name": "Coleman Building",
+        "subjects": ["Computer Science", "Art"]
+      },
+      {
+        "name": "Jenkins Center",
+        "subjects": ["Computer Science"]
+      },
+      {
+        "name": "Perry Hall",
+        "subjects": ["Computer Science"]
+      },
+      {
+        "name": "Powell Building",
+        "subjects": ["Computer Science"]
+      },
+      {
+        "name": "Long Center",
+        "subjects": ["Computer Science"]
+      },
+      {
+        "name": "Patterson Hall",
+        "subjects": ["Computer Science"]
+      },
+      {
+        "name": "Hughes Building",
+        "subjects": ["Computer Science"]
       }
     ],
     "Art": [
       {
         "name": "Art Center",
-        "subjects": [
-          "Art",
-          "Music",
-          "Theater"
-        ]
+        "subjects": ["Art", "Music", "Theater"]
       },
       {
         "name": "Founder's Complex",
-        "subjects": [
-          "PE",
-          "Math",
-          "Science",
-          "History",
-          "English",
-          "Language",
-          "Music",
-          "Theater",
-          "Library",
-          "Cafeteria",
-          "Computer Science",
-          "Art"
-        ]
+        "subjects": ["PE", "Math", "Science", "History", "English", "Language", "Music", "Theater", "Library", "Cafeteria", "Computer Science", "Art"]
       },
       {
         "name": "Frescoes Center",
-        "subjects": [
-          "Art",
-          "Music",
-          "Theater"
-        ]
+        "subjects": ["Art", "Music", "Theater"]
       },
       {
         "name": "Hudson Hall",
-        "subjects": [
-          "Theater",
-          "Music",
-          "Art"
-        ]
+        "subjects": ["Theater", "Music", "Art"]
+      },
+      {
+        "name": "Belle Center",
+        "subjects": ["Music", "Art"]
+      },
+      {
+        "name": "James Hall",
+        "subjects": ["History", "Language", "Art"]
+      },
+      {
+        "name": "Sanders Center",
+        "subjects": ["History", "Language", "Art"]
+      },
+      {
+        "name": "Ross Hall",
+        "subjects": ["History", "Language", "Art"]
+      },
+      {
+        "name": "Freeman Building",
+        "subjects": ["Theater", "Art"]
+      },
+      {
+        "name": "Porter Building",
+        "subjects": ["Theater", "Art"]
+      },
+      {
+        "name": "Coleman Building",
+        "subjects": ["Computer Science", "Art"]
+      },
+      {
+        "name": "Bowman Hall",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Medina Center",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Fowler Building",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Brewer Hall",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Hoffman Center",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Carlson Building",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Silva Hall",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Pearson Center",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Holland Building",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Douglas Hall",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Fleming Center",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Jensen Building",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Vargas Hall",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Byrd Center",
+        "subjects": ["Art"]
+      },
+      {
+        "name": "Davidson Building",
+        "subjects": ["Art"]
       }
     ]
   },
