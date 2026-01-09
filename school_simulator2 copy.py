@@ -4,7 +4,7 @@ from random import *
 
 from PIL import Image
 from noise import pnoise2
-    
+import json
 
 class Button():
     def __init__(self, label, label_size, color, id, location, dimensions):
@@ -60,13 +60,15 @@ class Block():
                 element.render(screen)
                 
 class Building():
-    def __init__(self, name, location=(0,0), dimensions=(0,0), connections=[], subject=None, rooms=[]):
+    def __init__(self, name, location=(0,0), dimensions=(0,0), connections=[], subject=None, floors=0, rooms=[], corridors=[{"x": [], "y": []}]):
         self.name = name
         self.location = location
         self.dimensions = dimensions
         self.connections = connections
         self.subject = subject
+        self.floors = floors
         self.rooms = rooms
+        self.corridors = corridors
     def occupied(self, buildings):
         occupied = set()
         # Skip if building hasn't been placed yet (dimensions are 0)
@@ -235,7 +237,6 @@ class Building():
         # reach_x is for columns, reach_y is for rows
         self.location = ((self.location[0] - reach_x_negative), (self.location[1] - reach_y_negative))  # (col, row) format
         self.dimensions = ((reach_x_positive + reach_x_negative + 1), (reach_y_positive + reach_y_negative + 1))
-        print(self.name, "has been generated")
         return self
     def make_connections(self, buildings):
         connections = []
@@ -268,10 +269,54 @@ class Building():
         for i in range(len(buildings)):
             if border_exists(self, buildings[i]) and self != buildings[i]:
                 connections.append((buildings[i]))
-                print(f"Added connection between {self.name} and {buildings[i].name}")
         return connections
-    def assign_building(self, possible_buildings):
-        pass
+    def assign_building(self, buildings_sorted_subject, subject, buildings):
+        index = randint(0, len(buildings_sorted_subject[subject]) - 1)
+        names = [building.name for building in buildings]
+        while buildings_sorted_subject[subject][index]['name'] in names:
+            index = randint(0, len(buildings_sorted_subject[subject]) - 1)
+        self.name = buildings_sorted_subject[subject][index]['name']
+        self.subjects = subject
+    def generate_corridors(self, floor=0):
+        relevant = []
+        for building in self.connections:
+            if building.corridors[floor]["x"] or building.corridors[floor]["y"]:
+                relevant.append(building)
+        if relevant:
+            print("bordering buildings")
+            for building in relevant:
+                offset = (building.location[0] - self.location[0], building.location[1] - self.location[1])
+                for corridor in building.corridors[floor]["x"]:
+                    if corridor + offset[0] > 0 and corridor + offset[0] < self.dimensions[0]:
+                        self.corridors[floor]["x"].append(corridor + offset[0])
+                for corridor in building.corridors[floor]["y"]:
+                    if corridor + offset[1] > 0 and corridor + offset[1] < self.dimensions[1]:
+                        self.corridors[floor]["y"].append(corridor + offset[1])
+            self.corridors[floor]["x"].sort()
+            self.corridors[floor]["y"].sort()
+        else:
+            x_available = [i for i in range(1, self.dimensions[0] - 1)]
+            y_available = [i for i in range(1, self.dimensions[1] - 1)]
+            x_determinant = randint(1, 3)
+            y_determinant = randint(1, 3)
+            while x_available and len(self.corridors[floor]["x"]) < x_determinant:
+                attempt_x = choice(x_available)
+                self.corridors[floor]["x"].append(attempt_x)
+                x_available.remove(attempt_x)
+                if attempt_x + 1 in x_available:
+                    x_available.remove(attempt_x + 1)
+                if attempt_x - 1 in x_available:
+                    x_available.remove(attempt_x - 1)
+            while y_available and len(self.corridors[floor]["y"]) < y_determinant:
+                attempt_y = choice(y_available)
+                self.corridors[floor]["y"].append(attempt_y)
+                y_available.remove(attempt_y)
+                if attempt_y + 1 in y_available:
+                    y_available.remove(attempt_y + 1)
+                if attempt_y - 1 in y_available:
+                    y_available.remove(attempt_y - 1)
+            self.corridors[floor]["x"].sort()
+            self.corridors[floor]["y"].sort()
     def render(self, screen):
         pygame.draw.rect(screen, (150, 75, 25), (self.location[0]*10, self.location[1]*10,
                                               self.dimensions[0]*10, self.dimensions[1]*10))
@@ -375,7 +420,6 @@ class GreenSpace():
         # self.location[0] is col, self.location[1] is row
         self.location = ((self.location[0] - reach_x_negative), (self.location[1] - reach_y_negative))  # (col, row) format
         self.dimensions = ((reach_x_positive + reach_x_negative + 1), (reach_y_positive + reach_y_negative + 1))
-        print(self.name, "has been generated")
         return self
     def render(self, screen):
         pygame.draw.rect(screen, (75, 150, 75), (self.location[0]*10, self.location[1]*10,
@@ -388,14 +432,13 @@ def gen_board(grid_size, scale):
                               lacunarity=1.5, base=seed)+1)/2 
             for r in range(rows)] for c in range(cols)]
     return board_map
-
-
-       
+         
 
 def place_buildings(board_map):
     buildings = []
     for i in range(20):
         buildings.append(Building(name=f"Building {i}"))
+    assign_buildings(buildings)
     # Find focus zone
     def get_zones(buildings, board_map):
         overpopulated = [False, False, False, False, False]
@@ -455,6 +498,24 @@ def connect_buildings(buildings):
         building.make_connections(buildings)
     return buildings
 
+def assign_buildings(buildings):
+    all_subjects = ["Math", "Science", "History", "English", "Language", "PE", "Art", "Music", 
+    "Theater", "Computer Science", "Cafeteria", "Library"]
+    with open('building_definitions.json', 'r') as f:
+        building_definitions = json.load(f)
+    buildings_sorted_subject = building_definitions['subjects']
+    for i, building in enumerate(buildings):
+        if i < 12:
+            subject = all_subjects[i]
+        else:
+            subject = all_subjects[randint(0, len(all_subjects) - 1)]
+        building.assign_building(buildings_sorted_subject, subject, buildings)
+    return buildings
+
+def make_building_corridors(buildings):
+    for building in buildings:
+        building.generate_corridors()
+    return buildings
 # Draw the board
 def draw_board(screen, structures):
     screen.fill((70, 70, 70))
@@ -488,6 +549,8 @@ def initialize_game():
 
     # Further information about buildings
     connect_buildings(buildings)
+    assign_buildings(buildings)
+    make_building_corridors(buildings)
 
     return structures
 structures = initialize_game()
