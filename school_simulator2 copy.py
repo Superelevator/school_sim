@@ -117,7 +117,7 @@ class Building():
             zone = randint(0, 4)
         focus = zone
         # Establish intervals
-        intervals = [0.3, 0.1, 0.075, 0.10, 0.4]
+        intervals = [0.3, 0.1, 0.075, 0.075, 0.425]
         fourth_bound = intervals[0]
         third_bound = fourth_bound + intervals[1]
         second_bound = third_bound + intervals[2]
@@ -187,7 +187,7 @@ class Building():
         def in_focus(col, row):
             return row >= focus * rows // 5 and row < (focus + 1) * rows // 5
         def non_oblong(reach_x_negative, reach_x_positive, reach_y_negative, reach_y_positive):
-            if max(reach_x_negative + reach_x_positive + 1, reach_y_negative + reach_y_positive + 1) > 2.5*min(reach_x_negative + reach_x_positive + 1, reach_y_negative + reach_y_positive + 1):
+            if max(reach_x_negative + reach_x_positive + 1, reach_y_negative + reach_y_positive + 1) > 3*min(reach_x_negative + reach_x_positive + 1, reach_y_negative + reach_y_positive + 1):
                 return False
             return True
 
@@ -280,7 +280,7 @@ class Building():
             index = randint(0, len(buildings_sorted_subject[subject]) - 1)
         self.name = buildings_sorted_subject[subject][index]['name']
         self.subject = subject
-        self.floors = randint(1, 3)
+        self.floors = randint(1, 4)
         # Reinitialize to match new floor count
         self.rooms = [[] for _ in range(self.floors)]
         self.corridors = [{"x": [], "y": []} for _ in range(self.floors)]
@@ -494,10 +494,14 @@ class Building():
                     self.rooms[floor].append(Room(name=f"{self.name[0:3].upper()}-{floor}{len(self.rooms[floor])}", location=(zone["location"][0] + total_width, zone["location"][1]), dimensions=(width, zone["dimensions"][1]), parent_building=self, subject=self.subject))
                     total_width += width
                 # Iterate through rooms in area order without modifying list
-        for room in sorted(self.rooms[floor], key=lambda r: r.dimensions[0] * r.dimensions[1], reverse=False):
+        sorted_rooms = sorted(self.rooms[floor], key=lambda r: r.dimensions[0] * r.dimensions[1], reverse=False)
+        largest_room = sorted_rooms[-1]
+
+        for room in sorted_rooms:
             area = room.dimensions[0] * room.dimensions[1]
             room.identity = classify_by_area(area, self.rooms[floor])
-        return self
+            if room == largest_room and room.identity != "Classroom" and room.identity not in ["Cafeteria", "Library", "PE", "Theater"]:
+                room.identity = "Classroom"
     def render(self, screen, floor):
         tile_size = 10
         building_x = self.location[0] * tile_size
@@ -817,8 +821,8 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 floor += 1
-                if floor >= 2:
-                    floor = 2
+                if floor >= 3:
+                    floor = 3
             if event.key == pygame.K_DOWN:
                 floor -= 1
                 if floor < 0:
@@ -834,4 +838,4 @@ while running:
     pygame.display.flip()
     clock.tick(60)  
 
-pygame.quit()   
+pygame.quit()  
