@@ -60,15 +60,20 @@ class Block():
                 element.render(screen)
                 
 class Building():
-    def __init__(self, name, location=(0,0), dimensions=(0,0), connections=[], subject=None, floors=0, rooms=[], corridors=[{"x": [], "y": []}]):
+    def __init__(self, name, location=(0,0), dimensions=(0,0), connections=None, subject=None, floors=1, rooms=None, corridors=None, corridor_connections=None):
         self.name = name
         self.location = location
         self.dimensions = dimensions
-        self.connections = connections
+        self.connections = connections if connections is not None else []
         self.subject = subject
         self.floors = floors
-        self.rooms = rooms
-        self.corridors = corridors
+        self.rooms = rooms if rooms is not None else [[] for _ in range(floors)]
+        if corridors is None:
+            # Create separate list objects for each floor
+            self.corridors = [{"x": [], "y": []} for _ in range(floors)]
+        else:
+            self.corridors = corridors
+        self.corridor_connections = corridor_connections if corridor_connections is not None else []
     def occupied(self, buildings):
         occupied = set()
         # Skip if building hasn't been placed yet (dimensions are 0)
@@ -239,7 +244,6 @@ class Building():
         self.dimensions = ((reach_x_positive + reach_x_negative + 1), (reach_y_positive + reach_y_negative + 1))
         return self
     def make_connections(self, buildings):
-        connections = []
         def border_exists(building1, building2):
             # Get borders of both buildings
             building1_west = building1.location[0]
@@ -268,58 +272,281 @@ class Building():
         # Make connections between THIS building and other buildings
         for i in range(len(buildings)):
             if border_exists(self, buildings[i]) and self != buildings[i]:
-                connections.append((buildings[i]))
-        return connections
+                self.connections.append(buildings[i])
     def assign_building(self, buildings_sorted_subject, subject, buildings):
         index = randint(0, len(buildings_sorted_subject[subject]) - 1)
         names = [building.name for building in buildings]
         while buildings_sorted_subject[subject][index]['name'] in names:
             index = randint(0, len(buildings_sorted_subject[subject]) - 1)
         self.name = buildings_sorted_subject[subject][index]['name']
-        self.subjects = subject
+        self.subject = subject
+        self.floors = randint(1, 3)
+        # Reinitialize to match new floor count
+        self.rooms = [[] for _ in range(self.floors)]
+        self.corridors = [{"x": [], "y": []} for _ in range(self.floors)]
+        return self
     def generate_corridors(self, floor=0):
-        relevant = []
+        while len(self.corridors) <= floor:
+            self.corridors.append({"x": [], "y": []})
+
+        # Copy from floor 0 if this is an upper floor
+        if floor > 0 and len(self.corridors) > 0:
+            self.corridors[floor]["x"] = self.corridors[0]["x"].copy()
+            self.corridors[floor]["y"] = self.corridors[0]["y"].copy()
+            return self  # Skip rest of generation
+        if self.subject in ["Cafeteria", "Library", "PE", "Theater"]:
+            return self
+        self.corridors[floor]["x"] = []
+        self.corridors[floor]["y"] = []
+
+
+        # Define border direction
+        def border_direction(building1, building2):
+            if building1.location[0] + building1.dimensions[0] == building2.location[0] or building1.location[0] == building2.location[0] + building2.dimensions[0]:
+                # Left or right border
+                return "leftright"
+            elif building1.location[1] + building1.dimensions[1] == building2.location[1] or building1.location[1] == building2.location[1] + building2.dimensions[1]:
+                # Top or bottom border
+                return "topbottom"
+            else:
+                # No border
+                return None
+        
+        def surroundings_clear(corridor, direction, floor):
+            if direction == "topbottom":  # X corridors
+                corridor_list = self.corridors[floor]["x"]
+            elif direction == "leftright":  # Y corridors
+                corridor_list = self.corridors[floor]["y"]
+            
+            if corridor in corridor_list:
+                return False
+            if corridor + 1 in corridor_list:
+                return False
+            if corridor - 1 in corridor_list:
+                return False
+            return True
+        
+        def in_bounds(corridor, direction):
+            if direction == "vertical":
+                return corridor >= 0 and corridor <= self.dimensions[0] - 1
+            elif direction == "horizontal":
+                return corridor >= 0 and corridor <= self.dimensions[1] - 1
+            else:
+                return True
+        
         for building in self.connections:
-            if building.corridors[floor]["x"] or building.corridors[floor]["y"]:
-                relevant.append(building)
-        if relevant:
-            print("bordering buildings")
-            for building in relevant:
-                offset = (building.location[0] - self.location[0], building.location[1] - self.location[1])
+            if len(building.corridors) - 1 < floor:
+                continue
+            direction = border_direction(self, building)
+            if direction == "topbottom":
                 for corridor in building.corridors[floor]["x"]:
-                    if corridor + offset[0] > 0 and corridor + offset[0] < self.dimensions[0]:
-                        self.corridors[floor]["x"].append(corridor + offset[0])
+                    offset = self.location[0] - building.location[0]
+                    proposition = corridor - offset
+                    if proposition > 0 and proposition < self.dimensions[0] - 1 and surroundings_clear(proposition, "topbottom", floor):
+                        self.corridors[floor]["x"].append(proposition)
+                        if building not in self.corridor_connections:
+                            self.corridor_connections.append(building)
+            elif direction == "leftright":
                 for corridor in building.corridors[floor]["y"]:
-                    if corridor + offset[1] > 0 and corridor + offset[1] < self.dimensions[1]:
-                        self.corridors[floor]["y"].append(corridor + offset[1])
-            self.corridors[floor]["x"].sort()
-            self.corridors[floor]["y"].sort()
-        else:
-            x_available = [i for i in range(1, self.dimensions[0] - 1)]
-            y_available = [i for i in range(1, self.dimensions[1] - 1)]
-            x_determinant = randint(1, 3)
-            y_determinant = randint(1, 3)
-            while x_available and len(self.corridors[floor]["x"]) < x_determinant:
-                attempt_x = choice(x_available)
-                self.corridors[floor]["x"].append(attempt_x)
-                x_available.remove(attempt_x)
-                if attempt_x + 1 in x_available:
-                    x_available.remove(attempt_x + 1)
-                if attempt_x - 1 in x_available:
-                    x_available.remove(attempt_x - 1)
-            while y_available and len(self.corridors[floor]["y"]) < y_determinant:
-                attempt_y = choice(y_available)
-                self.corridors[floor]["y"].append(attempt_y)
-                y_available.remove(attempt_y)
-                if attempt_y + 1 in y_available:
-                    y_available.remove(attempt_y + 1)
-                if attempt_y - 1 in y_available:
-                    y_available.remove(attempt_y - 1)
-            self.corridors[floor]["x"].sort()
-            self.corridors[floor]["y"].sort()
-    def render(self, screen):
-        pygame.draw.rect(screen, (150, 75, 25), (self.location[0]*10, self.location[1]*10,
-                                              self.dimensions[0]*10, self.dimensions[1]*10))
+                    offset = self.location[1] - building.location[1]
+                    proposition = corridor - offset
+                    if proposition > 0 and proposition < self.dimensions[1] - 1 and surroundings_clear(proposition, "leftright", floor):
+                        self.corridors[floor]["y"].append(proposition)
+                        if building not in self.corridor_connections:
+                            self.corridor_connections.append(building)
+        self.corridors[floor]["x"].sort()
+        self.corridors[floor]["y"].sort()
+        if (not self.corridors[floor]["x"]) or (not self.corridors[floor]["y"]):
+            if not self.corridors[floor]["x"]:
+                possible_corridors = []
+                for i in range(1, self.dimensions[0] - 1):
+                    if surroundings_clear(i, "leftright", floor):
+                        possible_corridors.append(i)
+                if possible_corridors:
+                    proposition = choice(possible_corridors)
+                    self.corridors[floor]["x"].append(proposition)
+                else:
+                    return self
+            if not self.corridors[floor]["y"]:
+                possible_corridors = []
+                for i in range(1, self.dimensions[1] - 1):
+                    if surroundings_clear(i, "topbottom", floor):
+                        possible_corridors.append(i)
+                if possible_corridors:
+                    proposition = choice(possible_corridors)
+                    self.corridors[floor]["y"].append(proposition)
+                else:
+                    return self
+    def generate_rooms(self, floor):
+        def classify_by_area(area, rooms):
+            types = []
+            for room in rooms:
+                types.append(room.identity)
+            if "Bathroom" not in types and area >= 3:
+                return "Bathroom"
+            if "Office" not in types and area >= 4:
+                return "Office"
+            if "Classroom" not in types and area >= 8:
+                return "Classroom"
+            # Start classification for room types by area.
+            # Guarantee a few necessary room types by size thresholds.
+            bathrooms = 0
+            for room in rooms:
+                if room.identity == "Bathroom":
+                    bathrooms += 1
+            if area >= 8:
+                return "Classroom"
+            elif area >= 4:
+                return "Office"
+            elif area >= 3 and bathrooms < 1:
+                return "Bathroom"
+            else:
+                return "Storage"
+        while len(self.rooms) <= floor:
+            self.rooms.append([])
+        if self.subject in ["Cafeteria", "Library", "PE", "Theater"]:
+            self.rooms[floor].append(Room(name=f"{self.name[0:3].upper()}-{self.subject.upper()}-{floor}", location=(0, 0), dimensions=(self.dimensions[0], self.dimensions[1]), parent_building=self, subject=self.subject, identity=self.subject))
+            return self
+        corridors = self.corridors[floor]
+        zones = []
+        # Create boundaries that split zones AROUND corridors, not through them
+        boundaries_x = [0, self.dimensions[0]]
+        for x in corridors["x"]:
+            boundaries_x.append(x)      # Before corridor
+            boundaries_x.append(x + 1)  # After corridor
+        xs = sorted(set(boundaries_x))  # Remove duplicates and sort
+
+        boundaries_y = [0, self.dimensions[1]]
+        for y in corridors["y"]:
+            boundaries_y.append(y)      # Before corridor
+            boundaries_y.append(y + 1)  # After corridor
+        ys = sorted(set(boundaries_y))  # Remove duplicates and sort
+        for i in range(len(xs)-1):
+            for j in range(len(ys)-1):
+                zone_x = xs[i]
+                zone_y = ys[j]
+                zone_w = xs[i+1] - xs[i]
+                zone_h = ys[j+1] - ys[j]
+                
+                # Skip zones that are exactly on corridor positions
+                if zone_w == 1 and zone_x in corridors["x"]:
+                    continue
+                if zone_h == 1 and zone_y in corridors["y"]:
+                    continue
+                
+                zones.append({"location": (zone_x, zone_y), "dimensions": (zone_w, zone_h)})
+        
+        for zone in zones:
+            if min(zone["dimensions"][0], zone["dimensions"][1]) == zone["dimensions"][0]:
+                direction = "horizontal"
+            else:
+                direction = "vertical"
+            if direction == "horizontal":
+                divisions = zone["dimensions"][1] // 3
+                if divisions == 0:
+                    divisions = 1
+                total_difference = 0
+                heights = []
+                while divisions > 0:
+                    if zone["dimensions"][1] - total_difference < 2:
+                        remaining = zone["dimensions"][1] - total_difference
+                        if len(heights) == 0:
+                            heights.append(max(1, remaining))  # At least 1
+                        elif remaining > 0:
+                            heights[-1] += remaining  # Add exact remaining amount
+                        break
+                    else:
+                        if divisions == 1:
+                            new_height = zone["dimensions"][1] - total_difference
+                        else:
+                            new_height = min(4+randint(-1, 1), zone["dimensions"][1] - total_difference)
+                        heights.append(new_height)
+                    total_difference += heights[-1]
+                    divisions -= 1
+                total_height = 0
+                for height in heights:
+                    self.rooms[floor].append(Room(name=f"{self.name[0:3].upper()}-{floor}{len(self.rooms[floor])}", location=(zone["location"][0], zone["location"][1] + total_height), dimensions=(zone["dimensions"][0], height), parent_building=self, subject=self.subject))
+                    total_height += height
+            elif direction == "vertical":  
+                divisions = zone["dimensions"][0] // 3
+                if divisions == 0:
+                    divisions = 1
+                total_difference = 0
+                widths = []
+                while divisions > 0:
+                    if zone["dimensions"][0] - total_difference < 2:
+                        remaining = zone["dimensions"][0] - total_difference
+                        if len(widths) == 0:
+                            widths.append(max(1, remaining))  # At least 1
+                        elif remaining > 0:
+                            widths[-1] += remaining  # Add exact remaining amount
+                        break
+                    else:
+                        if divisions == 1:
+                            new_width = zone["dimensions"][0] - total_difference
+                        else:
+                            new_width = min(4+randint(-1, 1), zone["dimensions"][0] - total_difference)
+                        widths.append(new_width)
+                    total_difference += widths[-1]
+                    divisions -= 1
+                total_width = 0
+                for width in widths:
+                    self.rooms[floor].append(Room(name=f"{self.name[0:3].upper()}-{floor}{len(self.rooms[floor])}", location=(zone["location"][0] + total_width, zone["location"][1]), dimensions=(width, zone["dimensions"][1]), parent_building=self, subject=self.subject))
+                    total_width += width
+                # Iterate through rooms in area order without modifying list
+        for room in sorted(self.rooms[floor], key=lambda r: r.dimensions[0] * r.dimensions[1], reverse=False):
+            area = room.dimensions[0] * room.dimensions[1]
+            room.identity = classify_by_area(area, self.rooms[floor])
+        return self
+    def render(self, screen, floor):
+        tile_size = 10
+        building_x = self.location[0] * tile_size
+        building_y = self.location[1] * tile_size
+        building_width = self.dimensions[0] * tile_size
+        building_height = self.dimensions[1] * tile_size
+        
+        # Draw building outline
+        pygame.draw.rect(screen, (150, 75, 25), (building_x, building_y, building_width, building_height))
+        # Draw corridors (if they exist)
+        if self.corridors and len(self.corridors) > floor:  # Draw floor 0 corridors
+            corridor_color = (200, 200, 200)  # Light gray for corridors            
+            # Draw X corridors (vertical corridors - run horizontally through the building)
+            for corridor_x in self.corridors[floor]["x"]:
+                corridor_pixel_x = building_x + corridor_x * tile_size
+                pygame.draw.rect(screen, corridor_color, 
+                               (corridor_pixel_x, building_y, tile_size, building_height))
+            
+            # Draw Y corridors (horizontal corridors - run vertically through the building)
+            for corridor_y in self.corridors[floor]["y"]:
+                corridor_pixel_y = building_y + corridor_y * tile_size
+                pygame.draw.rect(screen, corridor_color, 
+                               (building_x, corridor_pixel_y, building_width, tile_size))
+        # Draw rooms relative to building
+        if self.rooms and len(self.rooms) > floor:
+            for room in self.rooms[floor]:
+                room_x = room.location[0] * tile_size + building_x
+                room_y = room.location[1] * tile_size + building_y 
+                room_width = room.dimensions[0] * tile_size
+                room_height = room.dimensions[1] * tile_size
+                if room.identity == "Classroom":
+                    pygame.draw.rect(screen, (0, 0, 255), (room_x, room_y, room_width, room_height))
+                elif room.identity == "Office":
+                    pygame.draw.rect(screen, (0, 255, 0), (room_x, room_y, room_width, room_height))
+                elif room.identity == "Bathroom":
+                    pygame.draw.rect(screen, (0, 255, 255), (room_x, room_y, room_width, room_height))
+                elif room.identity == "Storage":
+                    pygame.draw.rect(screen, (255, 0, 0), (room_x, room_y, room_width, room_height))
+                elif room.identity == "Cafeteria":
+                    pygame.draw.rect(screen, (50, 200, 50), (room_x, room_y, room_width, room_height))
+                elif room.identity == "Library":
+                    pygame.draw.rect(screen, (150, 125, 50), (room_x, room_y, room_width, room_height))
+                elif room.identity == "PE":
+                    pygame.draw.rect(screen, (150, 150, 150), (room_x, room_y, room_width, room_height))
+                elif room.identity == "Theater":
+                    pygame.draw.rect(screen, (255, 50, 255), (room_x, room_y, room_width, room_height))
+                # Draw outline around room (width=1 for thin, 2 for thicker)
+                pygame.draw.rect(screen, (50, 50, 50), (room_x, room_y, room_width, room_height), 1)
+
 class GreenSpace():
     def __init__(self, name, location, dimensions):
         self.name = name
@@ -424,6 +651,15 @@ class GreenSpace():
     def render(self, screen):
         pygame.draw.rect(screen, (75, 150, 75), (self.location[0]*10, self.location[1]*10,
                                               self.dimensions[0]*10, self.dimensions[1]*10))
+class Room():
+    def __init__(self, name, location, dimensions, parent_building, subject, identity=None):
+        self.name = name
+        self.location = location
+        self.dimensions = dimensions
+        self.parent_building = parent_building
+        self.identity = identity
+    
+    
 
 def gen_board(grid_size, scale):
     cols, rows = grid_size
@@ -514,10 +750,22 @@ def assign_buildings(buildings):
 
 def make_building_corridors(buildings):
     for building in buildings:
-        building.generate_corridors()
+        for floor in range(building.floors):
+            building.generate_corridors(floor)
+    for building in buildings:
+        for floor in range(building.floors):
+            building.generate_corridors(floor)
     return buildings
+
+def make_rooms(buildings):
+    for building in buildings:
+        for floor in range(building.floors):
+            building.generate_rooms(floor)
+    return buildings
+
+
 # Draw the board
-def draw_board(screen, structures):
+def draw_board(screen, structures, floor):
     screen.fill((70, 70, 70))
     buildings = structures[0]
     green_spaces = structures[1]
@@ -525,7 +773,7 @@ def draw_board(screen, structures):
 
     # Building set-up
     for building in buildings:
-        building.render(screen)
+        building.render(screen, floor)
     for green_space in green_spaces:
         green_space.render(screen)
         
@@ -551,28 +799,39 @@ def initialize_game():
     connect_buildings(buildings)
     assign_buildings(buildings)
     make_building_corridors(buildings)
+    make_rooms(buildings)
 
     return structures
 structures = initialize_game()
 running = True
 
+floor = 0
+
 while running:
     # prepare frame
-    
-    draw_board(screen, structures) 
+    draw_board(screen, structures, floor) 
     for event in pygame.event.get():
         # quit
         if event.type == pygame.QUIT:
             running = False
-        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                floor += 1
+                if floor >= 2:
+                    floor = 2
+            if event.key == pygame.K_DOWN:
+                floor -= 1
+                if floor < 0:
+                    floor = 0
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 structures = initialize_game()
         # check click
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
+        
      
     pygame.display.flip()
     clock.tick(60)  
 
-pygame.quit()  
+pygame.quit()   
