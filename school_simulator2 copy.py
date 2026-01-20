@@ -1,3 +1,4 @@
+import typing
 import pygame, sys
 from math import *
 from random import *
@@ -7,40 +8,52 @@ from noise import pnoise2
 import json
 
 class Button():
-    def __init__(self, label, label_size, color, id, location, dimensions):
+    def __init__(self, label, label_size, color, id, location, dimensions, object, typing, visible, font_name=None, text_color=None):
         self.label = label
         self.label_size = label_size
+        self.text_color = text_color if text_color is not None else (0, 0, 0)
+        self.normal_color = color
+        self.pressed_color = tuple(int(c * 0.8) for c in color)
         self.color = color
         self.id = id
         self.location = location
         self.dimensions = dimensions
+        self.object = object
+        self.typing = typing
+        self.visible = visible
+        self.held = False
+        self.font_name = font_name
     def render(self, screen):
+        self.visible = True
         pygame.draw.rect(screen, self.color, (self.location[0], 
                                     self.location[1], self.dimensions[0], self.dimensions[1]))
-        font = pygame.font.Font(None, self.label_size)
-        text = font.render(self.label, True, (0, 0, 0))
+        font = get_font(self.label_size, self.font_name)  # Use custom font
+        text = font.render(self.label, True, self.text_color)
         text_rect = text.get_rect(center=(self.location[0] + self.dimensions[0] / 2,
                                           self.location[1] + self.dimensions[1] / 2))
         screen.blit(text, text_rect)
     def check_click(self, mouse_pos):
-        scaled_pos = (mouse_pos[0] * 2, mouse_pos[1] * 2)
-        if (self.location[0] < scaled_pos[0] < self.location[0] + 
-            self.dimensions[0] and
-            self.location[1] < scaled_pos[1] < self.location[1] +
-            self.dimensions[1]):
-            return self.id
-        else:
-            return None
+        if self.visible:
+            scaled_pos = (mouse_pos[0] , mouse_pos[1])
+            if (self.location[0] < scaled_pos[0] < self.location[0] + 
+                self.dimensions[0] and
+                self.location[1] < scaled_pos[1] < self.location[1] +
+                self.dimensions[1]):
+                return self.id
+            else:
+                return None
     
 
 class Text():
-    def __init__(self, text, color, location, size):
+    def __init__(self, text, color, location, size, font_name=None):  # Added font_name
         self.text = text
         self.color = color
         self.location = location
         self.size = size
+        self.font_name = font_name  # New attribute
+    
     def render(self, screen):
-        font = pygame.font.Font(None, self.size)
+        font = get_font(self.size, self.font_name)  # Use custom font if specified
         text = font.render(self.text, True, self.color)
         screen.blit(text, self.location)
 
@@ -60,7 +73,7 @@ class Block():
                 element.render(screen)
                 
 class Building():
-    def __init__(self, name, location=(0,0), dimensions=(0,0), connections=None, subject=None, floors=1, rooms=None, corridors=None, corridor_connections=None):
+    def __init__(self, name, location=(0,0), dimensions=(0,0), connections=None, subject=None, floors=1, rooms=None, corridors=None, corridor_connections=None, button=None):
         self.name = name
         self.location = location
         self.dimensions = dimensions
@@ -68,6 +81,7 @@ class Building():
         self.subject = subject
         self.floors = floors
         self.rooms = rooms if rooms is not None else [[] for _ in range(floors)]
+        self.button = button
         if corridors is None:
             # Create separate list objects for each floor
             self.corridors = [{"x": [], "y": []} for _ in range(floors)]
@@ -502,55 +516,76 @@ class Building():
             room.identity = classify_by_area(area, self.rooms[floor])
             if room == largest_room and room.identity != "Classroom" and room.identity not in ["Cafeteria", "Library", "PE", "Theater"]:
                 room.identity = "Classroom"
-    def render(self, screen, floor):
+    def create_button(self, tile_size):
+        self.button = Button(
+            label="",
+            label_size=24,
+            color=(150, 75, 25),  # Brownish for building button
+            id=f"building_{self.name}",
+            location=(self.location[0] * tile_size, self.location[1] * tile_size),
+            dimensions=(self.dimensions[0] * tile_size, self.dimensions[1] * tile_size),
+            object=self,
+            typing='building',
+            visible=False
+        )
+        return self.button
+    def render(self, screen, floor, mode):
         tile_size = 10
         building_x = self.location[0] * tile_size
         building_y = self.location[1] * tile_size
         building_width = self.dimensions[0] * tile_size
         building_height = self.dimensions[1] * tile_size
         
-        # Draw building outline
-        pygame.draw.rect(screen, (150, 75, 25), (building_x, building_y, building_width, building_height))
-        # Draw corridors (if they exist)
-        if self.corridors and len(self.corridors) > floor:  # Draw floor 0 corridors
-            corridor_color = (200, 200, 200)  # Light gray for corridors            
-            # Draw X corridors (vertical corridors - run horizontally through the building)
-            for corridor_x in self.corridors[floor]["x"]:
-                corridor_pixel_x = building_x + corridor_x * tile_size
-                pygame.draw.rect(screen, corridor_color, 
-                               (corridor_pixel_x, building_y, tile_size, building_height))
-            
-            # Draw Y corridors (horizontal corridors - run vertically through the building)
-            for corridor_y in self.corridors[floor]["y"]:
-                corridor_pixel_y = building_y + corridor_y * tile_size
-                pygame.draw.rect(screen, corridor_color, 
-                               (building_x, corridor_pixel_y, building_width, tile_size))
-        # Draw rooms relative to building
-        if self.rooms and len(self.rooms) > floor:
-            for room in self.rooms[floor]:
-                room_x = room.location[0] * tile_size + building_x
-                room_y = room.location[1] * tile_size + building_y 
-                room_width = room.dimensions[0] * tile_size
-                room_height = room.dimensions[1] * tile_size
-                if room.identity == "Classroom":
-                    pygame.draw.rect(screen, (0, 0, 255), (room_x, room_y, room_width, room_height))
-                elif room.identity == "Office":
-                    pygame.draw.rect(screen, (0, 255, 0), (room_x, room_y, room_width, room_height))
-                elif room.identity == "Bathroom":
-                    pygame.draw.rect(screen, (0, 255, 255), (room_x, room_y, room_width, room_height))
-                elif room.identity == "Storage":
-                    pygame.draw.rect(screen, (255, 0, 0), (room_x, room_y, room_width, room_height))
-                elif room.identity == "Cafeteria":
-                    pygame.draw.rect(screen, (50, 200, 50), (room_x, room_y, room_width, room_height))
-                elif room.identity == "Library":
-                    pygame.draw.rect(screen, (150, 125, 50), (room_x, room_y, room_width, room_height))
-                elif room.identity == "PE":
-                    pygame.draw.rect(screen, (150, 150, 150), (room_x, room_y, room_width, room_height))
-                elif room.identity == "Theater":
-                    pygame.draw.rect(screen, (255, 50, 255), (room_x, room_y, room_width, room_height))
-                # Draw outline around room (width=1 for thin, 2 for thicker)
-                pygame.draw.rect(screen, (50, 50, 50), (room_x, room_y, room_width, room_height), 1)
-
+        
+        def overlay_interior(screen, building, floor):
+            # Draw building outline
+            pygame.draw.rect(screen, (150, 75, 25), (building_x, building_y, building_width, building_height))
+            # Draw corridors (if they exist)
+            if self.corridors and len(self.corridors) > floor:  # Draw floor 0 corridors
+                corridor_color = (200, 200, 200)  # Light gray for corridors            
+                # Draw X corridors (vertical corridors - run horizontally through the building)
+                for corridor_x in self.corridors[floor]["x"]:
+                    corridor_pixel_x = building_x + corridor_x * tile_size
+                    pygame.draw.rect(screen, corridor_color, 
+                                (corridor_pixel_x, building_y, tile_size, building_height))
+                
+                # Draw Y corridors (horizontal corridors - run vertically through the building)
+                for corridor_y in self.corridors[floor]["y"]:
+                    corridor_pixel_y = building_y + corridor_y * tile_size
+                    pygame.draw.rect(screen, corridor_color, 
+                                (building_x, corridor_pixel_y, building_width, tile_size))
+            # Draw rooms relative to building
+            if self.rooms and len(self.rooms) > floor:
+                for room in self.rooms[floor]:
+                    room_x = room.location[0] * tile_size + building_x
+                    room_y = room.location[1] * tile_size + building_y 
+                    room_width = room.dimensions[0] * tile_size
+                    room_height = room.dimensions[1] * tile_size
+                    if room.identity == "Classroom":
+                        pygame.draw.rect(screen, (0, 0, 255), (room_x, room_y, room_width, room_height))
+                    elif room.identity == "Office":
+                        pygame.draw.rect(screen, (0, 255, 0), (room_x, room_y, room_width, room_height))
+                    elif room.identity == "Bathroom":
+                        pygame.draw.rect(screen, (0, 255, 255), (room_x, room_y, room_width, room_height))
+                    elif room.identity == "Storage":
+                        pygame.draw.rect(screen, (255, 0, 0), (room_x, room_y, room_width, room_height))
+                    elif room.identity == "Cafeteria":
+                        pygame.draw.rect(screen, (50, 200, 50), (room_x, room_y, room_width, room_height))
+                    elif room.identity == "Library":
+                        pygame.draw.rect(screen, (150, 125, 50), (room_x, room_y, room_width, room_height))
+                    elif room.identity == "PE":
+                        pygame.draw.rect(screen, (150, 150, 150), (room_x, room_y, room_width, room_height))
+                    elif room.identity == "Theater":
+                        pygame.draw.rect(screen, (255, 50, 255), (room_x, room_y, room_width, room_height))
+                    # Draw outline around room (width=1 for thin, 2 for thicker)
+                    pygame.draw.rect(screen, (50, 50, 50), (room_x, room_y, room_width, room_height), 1)
+        if mode == "normal":
+            self.button.render(screen)
+        elif mode == "interior":
+            # Draw building outline
+            self.button.visible = False
+            pygame.draw.rect(screen, (150, 75, 25), (building_x, building_y, building_width, building_height))
+            overlay_interior(screen, self, floor)
 class GreenSpace():
     def __init__(self, name, location, dimensions):
         self.name = name
@@ -767,9 +802,15 @@ def make_rooms(buildings):
             building.generate_rooms(floor)
     return buildings
 
+def create_building_buttons(buildings, tile_size):
+    buttons = []
+    for building in buildings:
+        buttons.append(building.create_button(tile_size))
+    return buttons
+
 
 # Draw the board
-def draw_board(screen, structures, floor):
+def draw_board(screen, structures, floor, mode):
     screen.fill((70, 70, 70))
     buildings = structures[0]
     green_spaces = structures[1]
@@ -777,22 +818,63 @@ def draw_board(screen, structures, floor):
 
     # Building set-up
     for building in buildings:
-        building.render(screen, floor)
+        building.render(screen, floor, mode)
     for green_space in green_spaces:
         green_space.render(screen)
         
-    
 
-    
+def handle_button(id, objects):
+    global active_menu
+    if id.startswith("building_"):
+        for building in objects[0][0]:
+            if building.button.id == id:
+                subject = building
+                break
+        location = (subject.location[0] * 10 - 150 + subject.dimensions[0] * 10 / 2, subject.location[1] * 10 - 125)
+        if location[0] < 0:
+            location = (0, location[1])
+        if location[0] > screen.get_width() - 300:
+            location = (screen.get_width() - 300, location[1])
+        if location[1] < 0:
+            location = (location[0], 0)
+        preliminary_structure = [
+            [Text(subject.name, (0, 0, 0), (location[0]+10, location[1]+10), 30, "helvetica")],
+            [Text(f"Subject: {subject.subject}", (0, 0, 0), (location[0]+10, location[1] + 40), 15, "helvetica")],
+            [Text(f"Floors: {subject.floors}", (0, 0, 0), (location[0]+10, location[1] + 55), 15, "helvetica")]
+        ]
+        menu = Block(structure=preliminary_structure, 
+            location=(location[0], location[1]), 
+            dimensions=(300, 100), 
+            color=(30, 100, 30), 
+            displayed=True)
+        if active_menu and active_menu.structure[0][0].text == f"{subject.name}":
+            active_menu = None  # Close menu
+        else:
+            active_menu = menu  # Open new menu
+        return menu
+
 
 pygame.font.init()
+
+# Font cache to avoid creating fonts every frame
+_font_cache = {}
+
+def get_font(size, name=None, bold=False, italic=False):
+    """Get or create a cached font"""
+    cache_key = (size, name, bold, italic)
+    if cache_key not in _font_cache:
+        if name:
+            _font_cache[cache_key] = pygame.font.SysFont(name, size, bold, italic)
+        else:
+            _font_cache[cache_key] = pygame.font.Font(None, size)
+    return _font_cache[cache_key]
         
 screen = pygame.display.set_mode((750, 750))
 pygame.display.set_caption("Campus")
 clock = pygame.time.Clock()
 
 def initialize_game():
-    global buildings, green_spaces, structures, heat_map
+    global buildings, green_spaces, structures, heat_map, buttons
     # Place all structures
     heat_map = gen_board((75, 75), 6)
     buildings = place_buildings(heat_map)
@@ -804,21 +886,25 @@ def initialize_game():
     assign_buildings(buildings)
     make_building_corridors(buildings)
     make_rooms(buildings)
-
-    return structures
-structures = initialize_game()
+    buttons = create_building_buttons(buildings, 10)
+    return structures, buttons
+objects = initialize_game()
 running = True
+structures = objects[0]
+buttons = objects[1]
 
 floor = 0
+mode = "normal"
+active_menu = None
 
 while running:
     # prepare frame
-    draw_board(screen, structures, floor) 
+    
     for event in pygame.event.get():
         # quit
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN and mode == "interior":
             if event.key == pygame.K_UP:
                 floor += 1
                 if floor >= 3:
@@ -827,14 +913,42 @@ while running:
                 floor -= 1
                 if floor < 0:
                     floor = 0
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                structures = initialize_game()
-        # check click
+        # if event.type == pygame.KEYDOWN:
+        #     if event.key == pygame.K_SPACE:
+        #         structures = initialize_game()
+        if event.type == pygame.KEYDOWN and mode == "normal":
+            if event.key == pygame.K_i:
+                mode = "interior"
+                floor = 0
+        if event.type == pygame.KEYDOWN and mode == "interior":
+            if event.key == pygame.K_n:
+                mode = "normal"
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
+            for button in buttons:
+                if button.visible and button.check_click(mouse_pos):
+                    button.held = True
+        # check click
+        if event.type == pygame.MOUSEBUTTONUP:
+            mouse_pos = pygame.mouse.get_pos()
+            for button in buttons:
+                if button.held:
+                    button.held = False
+                    if button.visible and button.check_click(mouse_pos):
+                        handle_button(button.id, objects)
+                    
         
-     
+    mouse_pos = pygame.mouse.get_pos()
+    mouse_pressed = pygame.mouse.get_pressed()[0]  # Left button
+
+    for button in buttons:
+        is_hovering = button.check_click(mouse_pos)
+        is_held = is_hovering and mouse_pressed
+        if button.visible:
+            button.color = button.pressed_color if is_held else button.normal_color
+    draw_board(screen, structures, floor, mode) 
+    if active_menu:
+        active_menu.render(screen)
     pygame.display.flip()
     clock.tick(60)  
 
