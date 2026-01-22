@@ -8,7 +8,7 @@ from noise import pnoise2
 import json
 
 class Button():
-    def __init__(self, label, label_size, color, id, location, dimensions, object, typing, visible, font_name=None, text_color=None, absolute=False):
+    def __init__(self, label, label_size, color, id, location, dimensions, typing, visible, object=None, font_name=None, text_color=None, absolute=False, outline_width=0, outline_color=(0, 0, 0)):
         self.label = label
         self.label_size = label_size
         self.text_color = text_color if text_color is not None else (0, 0, 0)
@@ -24,6 +24,8 @@ class Button():
         self.held = False
         self.font_name = font_name
         self.absolute = absolute  # If True, not affected by camera pan
+        self.outline_width = outline_width  # 0 = no outline
+        self.outline_color = outline_color  # Color of outline
     def render(self, screen):
         self.visible = True
         # Apply camera offset only if not absolute positioning
@@ -31,8 +33,17 @@ class Button():
             screen_x, screen_y = self.location[0], self.location[1]
         else:
             screen_x, screen_y = world_to_screen(self.location[0], self.location[1])
+        
+        # Draw main button rectangle
         pygame.draw.rect(screen, self.color, (screen_x, screen_y, 
                                     self.dimensions[0], self.dimensions[1]))
+        
+        # Draw outline if specified
+        if self.outline_width > 0:
+            pygame.draw.rect(screen, self.outline_color, (screen_x, screen_y,
+                                    self.dimensions[0], self.dimensions[1]), self.outline_width)
+        
+        # Draw text
         font = get_font(self.label_size, self.font_name)  # Use custom font
         text = font.render(self.label, True, self.text_color)
         text_rect = text.get_rect(center=(screen_x + self.dimensions[0] / 2,
@@ -73,7 +84,7 @@ class Text():
 
 
 class Block():
-    def __init__(self, structure, location, dimensions, color, displayed, absolute=False, opacity=255):
+    def __init__(self, structure, location, dimensions, color, displayed, absolute=False, opacity=255, outline_width=0, outline_color=(0, 0, 0)):
         self.structure = structure
         self.location = location
         self.dimensions = dimensions
@@ -81,6 +92,8 @@ class Block():
         self.displayed = displayed
         self.absolute = absolute  # If True, not affected by camera pan
         self.opacity = opacity  # 0 (transparent) to 255 (opaque)
+        self.outline_width = outline_width  # 0 = no outline
+        self.outline_color = outline_color  # Color of outline
     def render(self, screen):
         # Apply camera offset only if not absolute positioning
         if self.absolute:
@@ -94,6 +107,11 @@ class Block():
         # Draw rectangle with specified opacity
         color_with_alpha = (*self.color, self.opacity)  # Add alpha channel to RGB
         pygame.draw.rect(surface, color_with_alpha, (0, 0, self.dimensions[0], self.dimensions[1]))
+        
+        # Draw outline if specified
+        if self.outline_width > 0:
+            outline_with_alpha = (*self.outline_color, 255)  # Outline always fully opaque
+            pygame.draw.rect(surface, outline_with_alpha, (0, 0, self.dimensions[0], self.dimensions[1]), self.outline_width)
         
         # Blit transparent surface to screen
         screen.blit(surface, (screen_x, screen_y))
@@ -555,9 +573,9 @@ class Building():
             id=f"building_{self.name}",
             location=(self.location[0] * tile_size, self.location[1] * tile_size),
             dimensions=(self.dimensions[0] * tile_size, self.dimensions[1] * tile_size),
-            object=self,
             typing='building',
-            visible=False
+            visible=False,
+            object=self
         )
         return self.button
     def render(self, screen, floor, mode):
@@ -723,7 +741,7 @@ class GreenSpace():
         world_x = self.location[0] * 10
         world_y = self.location[1] * 10
         screen_x, screen_y = world_to_screen(world_x, world_y)
-        pygame.draw.rect(screen, (75, 150, 75), (screen_x, screen_y,
+        pygame.draw.rect(screen, (30, 120, 30), (screen_x, screen_y,
                                               self.dimensions[0]*10, self.dimensions[1]*10))
 class Room():
     def __init__(self, name, location, dimensions, parent_building, subject, identity=None):
@@ -838,15 +856,38 @@ def make_rooms(buildings):
     return buildings
 
 def create_building_buttons(buildings, tile_size):
+    global building_labels
     map_buttons = []
     for building in buildings:
         map_buttons.append(building.create_button(tile_size))
+    for building in buildings:
+        location = (building.location[0]*10+building.dimensions[0]*10/2-75, building.location[1]*10-40)
+        name_button = Button(label=f"{building.name}", label_size=15, 
+        color=(20, 90, 20), id=f"building_{building.name}", location=location, 
+        dimensions=(150, 30), object=building, typing=False, 
+        visible=True, font_name="helvetica", text_color=(0, 0, 0), outline_width=2, outline_color=(200, 200, 20))
+        name_block = Block(structure=[[name_button]],
+            location=location,
+            dimensions=(150, 30),
+            color=(20, 90, 20),
+            displayed=True,
+            absolute=True, opacity = 0)
+        map_buttons.append(name_button)
+        building_labels.append(name_block)
     return map_buttons
 
 
 # Draw the board
 def draw_board(screen, structures, floor, mode):
-    screen.fill((70, 70, 70))
+    # Fill window with very dark green background
+    screen.fill((10, 35, 10))
+    
+    # Draw gray map area (75x75 grid = 750x750 pixels)
+    map_size = 75 * 10  # 750 pixels
+    map_world_x, map_world_y = 0, 0
+    map_screen_x, map_screen_y = world_to_screen(map_world_x, map_world_y)
+    pygame.draw.rect(screen, (70, 70, 70), (map_screen_x, map_screen_y, map_size, map_size))
+    
     buildings = structures[0]
     green_spaces = structures[1]
     scale = 1
@@ -856,11 +897,26 @@ def draw_board(screen, structures, floor, mode):
         building.render(screen, floor, mode)
     for green_space in green_spaces:
         green_space.render(screen)
+    for building_label in building_labels:
+        building_label.render(screen)
         
 
 def handle_button(id, objects):
     global current_building_menu
     if id.startswith("building_"):
+        if id.startswith("building_layout_"):
+            for building in objects[0][0]:
+                if building.button.id == id:
+                    subject = building
+                    break
+            layout_block = Block(structure=[[Text(f"Layout: {subject.name}", (0, 0, 0), (0, 0), 15, "helvetica", absolute=True)]],
+                location=(0, 0),
+                dimensions=(500, 50),
+                color=(20, 90, 20),
+                displayed=True,
+                absolute=True, opacity = 200)
+            
+            return
         for building in objects[0][0]:
             if building.button.id == id:
                 subject = building
@@ -875,7 +931,7 @@ def handle_button(id, objects):
         location = (250, 500)
         
         building_name_structure = [
-            [Text(subject.name, (0, 0, 0), (location[0]+10, location[1]+10), 30, "arial", absolute=True)],
+            [Text(subject.name, (0, 0, 0), (location[0]+10, location[1]+10), 30, "arial", absolute=True)]
         ]
         building_name_block = Block(structure=building_name_structure,
             location=location,
@@ -886,13 +942,14 @@ def handle_button(id, objects):
 
         building_information_structure = [
             [Text(f"Subject: {subject.subject}", (0, 0, 0), (location[0]+10, location[1] + 60), 15, "helvetica", absolute=True)],
-            [Text(f"Floors: {subject.floors}", (0, 0, 0), (location[0]+10, location[1] + 75), 15, "helvetica", absolute=True)]
-        ]
+            [Text(f"Floors: {subject.floors}", (0, 0, 0), (location[0]+10, location[1] + 75), 15, "helvetica", absolute=True)],
+            [Button(label="Layout", label_size=10, color=(20, 90, 20), id=f"building_layout_{building.name}", location=(690, 560), dimensions=(50, 30), object=None, typing=False, visible=True, font_name="helvetica", absolute=True, text_color=(0, 0, 0), outline_width=2, outline_color=(200, 200, 20))]
+            ]
         building_information_block = Block(structure=building_information_structure,
             location=(location[0], location[1] + 50),
             dimensions=(500, 180),
             color=(10, 70, 10),
-            displayed=True, absolute=True, opacity = 255)
+            displayed=True, absolute=True, opacity = 255, outline_width=2, outline_color=(200, 200, 20))
         
         preliminary_structure = [
             [building_name_block],
@@ -940,15 +997,30 @@ def get_font(size, name=None, bold=False, italic=False):
         
 screen = pygame.display.set_mode((750, 750))
 pygame.display.set_caption("Campus")
+
+# Request window focus/activation
+pygame.event.set_grab(False)  # Ensure mouse isn't grabbed
+pygame.mouse.set_visible(True)  # Ensure mouse is visible
+
+# Pump events to process window activation
+for _ in range(10):
+    pygame.event.pump()
+    pygame.time.delay(10)
+
 clock = pygame.time.Clock()
 
 def initialize_game():
-    global buildings, green_spaces, structures, heat_map, map_buttons
+    global buildings, green_spaces, structures, heat_map, map_buttons, building_labels
     # Place all structures
     heat_map = gen_board((75, 75), 6)
     buildings = place_buildings(heat_map)
     green_spaces = place_green_spaces(heat_map, buildings)
     structures = [buildings, green_spaces]
+    building_labels = []
+    # Menus, buttons
+    absolute_menus = dict()
+    absolute_buttons = dict()
+    absolute_objects = [absolute_menus, absolute_buttons]
 
     # Further information about buildings
     connect_buildings(buildings)
@@ -956,12 +1028,13 @@ def initialize_game():
     make_building_corridors(buildings)
     make_rooms(buildings)
     map_buttons = create_building_buttons(buildings, 10)
-    return structures, map_buttons
+    return structures, map_buttons, building_labels, absolute_objects
 objects = initialize_game()
 running = True
 structures = objects[0]
 map_buttons = objects[1]
-
+building_labels = objects[2]
+absolute_objects = objects[3]
 floor = 0
 mode = "normal"
 current_building_menu = None
@@ -984,14 +1057,14 @@ while running:
                     floor = 0
         # if event.type == pygame.KEYDOWN:
         #     if event.key == pygame.K_SPACE:
-        #         structures = initialize_game()
-        if event.type == pygame.KEYDOWN and mode == "normal":
+        #         structures, map_buttons, building_labels = initialize_game()
+        if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_i:
-                mode = "interior"
-                floor = 0
-        if event.type == pygame.KEYDOWN and mode == "interior":
-            if event.key == pygame.K_n:
-                mode = "normal"
+                if mode == "normal":
+                    floor = 0
+                    mode = "interior"
+                elif mode == "interior":
+                    mode = "normal"
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
             for button in map_buttons:
