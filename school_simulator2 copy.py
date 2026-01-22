@@ -8,7 +8,7 @@ from noise import pnoise2
 import json
 
 class Button():
-    def __init__(self, label, label_size, color, id, location, dimensions, object, typing, visible, font_name=None, text_color=None):
+    def __init__(self, label, label_size, color, id, location, dimensions, object, typing, visible, font_name=None, text_color=None, absolute=False):
         self.label = label
         self.label_size = label_size
         self.text_color = text_color if text_color is not None else (0, 0, 0)
@@ -23,51 +23,82 @@ class Button():
         self.visible = visible
         self.held = False
         self.font_name = font_name
+        self.absolute = absolute  # If True, not affected by camera pan
     def render(self, screen):
         self.visible = True
-        pygame.draw.rect(screen, self.color, (self.location[0], 
-                                    self.location[1], self.dimensions[0], self.dimensions[1]))
+        # Apply camera offset only if not absolute positioning
+        if self.absolute:
+            screen_x, screen_y = self.location[0], self.location[1]
+        else:
+            screen_x, screen_y = world_to_screen(self.location[0], self.location[1])
+        pygame.draw.rect(screen, self.color, (screen_x, screen_y, 
+                                    self.dimensions[0], self.dimensions[1]))
         font = get_font(self.label_size, self.font_name)  # Use custom font
         text = font.render(self.label, True, self.text_color)
-        text_rect = text.get_rect(center=(self.location[0] + self.dimensions[0] / 2,
-                                          self.location[1] + self.dimensions[1] / 2))
+        text_rect = text.get_rect(center=(screen_x + self.dimensions[0] / 2,
+                                          screen_y + self.dimensions[1] / 2))
         screen.blit(text, text_rect)
     def check_click(self, mouse_pos):
         if self.visible:
-            scaled_pos = (mouse_pos[0] , mouse_pos[1])
-            if (self.location[0] < scaled_pos[0] < self.location[0] + 
-                self.dimensions[0] and
-                self.location[1] < scaled_pos[1] < self.location[1] +
-                self.dimensions[1]):
-                return self.id
+            # Convert mouse position based on positioning mode
+            if self.absolute:
+                check_pos = mouse_pos  # Direct screen coordinates
             else:
-                return None
+                check_pos = screen_to_world(mouse_pos[0], mouse_pos[1])  # World coordinates
+            if (self.location[0] < check_pos[0] < self.location[0] + self.dimensions[0] and
+                self.location[1] < check_pos[1] < self.location[1] + self.dimensions[1]):
+                return self.id
+        else:
+            return None
     
 
 class Text():
-    def __init__(self, text, color, location, size, font_name=None):  # Added font_name
+    def __init__(self, text, color, location, size, font_name=None, absolute=False):
         self.text = text
         self.color = color
         self.location = location
         self.size = size
-        self.font_name = font_name  # New attribute
+        self.font_name = font_name
+        self.absolute = absolute  # If True, not affected by camera pan
     
     def render(self, screen):
         font = get_font(self.size, self.font_name)  # Use custom font if specified
         text = font.render(self.text, True, self.color)
-        screen.blit(text, self.location)
+        # Apply camera offset only if not absolute positioning
+        if self.absolute:
+            screen_x, screen_y = self.location[0], self.location[1]
+        else:
+            screen_x, screen_y = world_to_screen(self.location[0], self.location[1])
+        screen.blit(text, (screen_x, screen_y))
 
 
 class Block():
-    def __init__(self, structure, location, dimensions, color, displayed):
+    def __init__(self, structure, location, dimensions, color, displayed, absolute=False, opacity=255):
         self.structure = structure
         self.location = location
         self.dimensions = dimensions
         self.color = color
         self.displayed = displayed
+        self.absolute = absolute  # If True, not affected by camera pan
+        self.opacity = opacity  # 0 (transparent) to 255 (opaque)
     def render(self, screen):
-        pygame.draw.rect(screen, self.color, (self.location[0], self.location[1],
-                                              self.dimensions[0], self.dimensions[1]))
+        # Apply camera offset only if not absolute positioning
+        if self.absolute:
+            screen_x, screen_y = self.location[0], self.location[1]
+        else:
+            screen_x, screen_y = world_to_screen(self.location[0], self.location[1])
+        
+        # Create surface with alpha support for transparency
+        surface = pygame.Surface((self.dimensions[0], self.dimensions[1]), pygame.SRCALPHA)
+        
+        # Draw rectangle with specified opacity
+        color_with_alpha = (*self.color, self.opacity)  # Add alpha channel to RGB
+        pygame.draw.rect(surface, color_with_alpha, (0, 0, self.dimensions[0], self.dimensions[1]))
+        
+        # Blit transparent surface to screen
+        screen.blit(surface, (screen_x, screen_y))
+        
+        # Render text on top
         for line in self.structure:
             for element in line:
                 element.render(screen)
@@ -531,8 +562,9 @@ class Building():
         return self.button
     def render(self, screen, floor, mode):
         tile_size = 10
-        building_x = self.location[0] * tile_size
-        building_y = self.location[1] * tile_size
+        world_x = self.location[0] * tile_size
+        world_y = self.location[1] * tile_size
+        building_x, building_y = world_to_screen(world_x, world_y)
         building_width = self.dimensions[0] * tile_size
         building_height = self.dimensions[1] * tile_size
         
@@ -674,7 +706,7 @@ class GreenSpace():
             if not strip_clear(strip):
                 viable_directions.remove(direction)
                 continue
-            
+
             if direction == 1:
                 reach_x_positive += 1
             elif direction == 2:
@@ -688,7 +720,10 @@ class GreenSpace():
         self.dimensions = ((reach_x_positive + reach_x_negative + 1), (reach_y_positive + reach_y_negative + 1))
         return self
     def render(self, screen):
-        pygame.draw.rect(screen, (75, 150, 75), (self.location[0]*10, self.location[1]*10,
+        world_x = self.location[0] * 10
+        world_y = self.location[1] * 10
+        screen_x, screen_y = world_to_screen(world_x, world_y)
+        pygame.draw.rect(screen, (75, 150, 75), (screen_x, screen_y,
                                               self.dimensions[0]*10, self.dimensions[1]*10))
 class Room():
     def __init__(self, name, location, dimensions, parent_building, subject, identity=None):
@@ -803,10 +838,10 @@ def make_rooms(buildings):
     return buildings
 
 def create_building_buttons(buildings, tile_size):
-    buttons = []
+    map_buttons = []
     for building in buildings:
-        buttons.append(building.create_button(tile_size))
-    return buttons
+        map_buttons.append(building.create_button(tile_size))
+    return map_buttons
 
 
 # Draw the board
@@ -824,35 +859,69 @@ def draw_board(screen, structures, floor, mode):
         
 
 def handle_button(id, objects):
-    global active_menu
+    global current_building_menu
     if id.startswith("building_"):
         for building in objects[0][0]:
             if building.button.id == id:
                 subject = building
                 break
-        location = (subject.location[0] * 10 - 150 + subject.dimensions[0] * 10 / 2, subject.location[1] * 10 - 125)
-        if location[0] < 0:
-            location = (0, location[1])
-        if location[0] > screen.get_width() - 300:
-            location = (screen.get_width() - 300, location[1])
-        if location[1] < 0:
-            location = (location[0], 0)
+        # location = (subject.location[0] * 10 - 150 + subject.dimensions[0] * 10 / 2, subject.location[1] * 10 - 125)
+        # if location[0] < 0:
+        #     location = (0, location[1])
+        # if location[0] > screen.get_width() - 300:
+        #     location = (screen.get_width() - 300, location[1])
+        # if location[1] < 0:
+        #     location = (location[0], 0)
+        location = (250, 500)
+        
+        building_name_structure = [
+            [Text(subject.name, (0, 0, 0), (location[0]+10, location[1]+10), 30, "arial", absolute=True)],
+        ]
+        building_name_block = Block(structure=building_name_structure,
+            location=location,
+            dimensions=(500, 50),
+            color=(20, 90, 20),
+            displayed=True,
+            absolute=True, opacity = 200)
+
+        building_information_structure = [
+            [Text(f"Subject: {subject.subject}", (0, 0, 0), (location[0]+10, location[1] + 60), 15, "helvetica", absolute=True)],
+            [Text(f"Floors: {subject.floors}", (0, 0, 0), (location[0]+10, location[1] + 75), 15, "helvetica", absolute=True)]
+        ]
+        building_information_block = Block(structure=building_information_structure,
+            location=(location[0], location[1] + 50),
+            dimensions=(500, 180),
+            color=(10, 70, 10),
+            displayed=True, absolute=True, opacity = 255)
+        
         preliminary_structure = [
-            [Text(subject.name, (0, 0, 0), (location[0]+10, location[1]+10), 30, "helvetica")],
-            [Text(f"Subject: {subject.subject}", (0, 0, 0), (location[0]+10, location[1] + 40), 15, "helvetica")],
-            [Text(f"Floors: {subject.floors}", (0, 0, 0), (location[0]+10, location[1] + 55), 15, "helvetica")]
+            [building_name_block],
+            [building_information_block]
         ]
         menu = Block(structure=preliminary_structure, 
             location=(location[0], location[1]), 
-            dimensions=(300, 100), 
+            dimensions=(500, 225), 
             color=(30, 100, 30), 
-            displayed=True)
-        if active_menu and active_menu.structure[0][0].text == f"{subject.name}":
-            active_menu = None  # Close menu
+            displayed=True,
+            absolute=True, opacity = 0)
+        if current_building_menu and current_building_menu.structure[0][0].structure[0][0].text == f"{subject.name}":
+            current_building_menu = None  # Close menu
         else:
-            active_menu = menu  # Open new menu
+            current_building_menu = menu  # Open new menu
         return menu
 
+
+# Camera system
+camera_offset = [0, 0]  # [x, y] camera offset in pixels
+zoom_level = 1.0  # Zoom factor (currently fixed at 1.0, can be modified for zoom feature)
+
+def world_to_screen(world_x, world_y):
+    """Convert world coordinates to screen coordinates"""
+    return (world_x - camera_offset[0], world_y - camera_offset[1])
+
+def screen_to_world(screen_x, screen_y):
+    """Convert screen coordinates to world coordinates"""
+    return (screen_x + camera_offset[0], screen_y + camera_offset[1])
 
 pygame.font.init()
 
@@ -874,7 +943,7 @@ pygame.display.set_caption("Campus")
 clock = pygame.time.Clock()
 
 def initialize_game():
-    global buildings, green_spaces, structures, heat_map, buttons
+    global buildings, green_spaces, structures, heat_map, map_buttons
     # Place all structures
     heat_map = gen_board((75, 75), 6)
     buildings = place_buildings(heat_map)
@@ -886,16 +955,16 @@ def initialize_game():
     assign_buildings(buildings)
     make_building_corridors(buildings)
     make_rooms(buildings)
-    buttons = create_building_buttons(buildings, 10)
-    return structures, buttons
+    map_buttons = create_building_buttons(buildings, 10)
+    return structures, map_buttons
 objects = initialize_game()
 running = True
 structures = objects[0]
-buttons = objects[1]
+map_buttons = objects[1]
 
 floor = 0
 mode = "normal"
-active_menu = None
+current_building_menu = None
 
 while running:
     # prepare frame
@@ -925,30 +994,68 @@ while running:
                 mode = "normal"
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
-            for button in buttons:
+            for button in map_buttons:
                 if button.visible and button.check_click(mouse_pos):
                     button.held = True
         # check click
         if event.type == pygame.MOUSEBUTTONUP:
             mouse_pos = pygame.mouse.get_pos()
-            for button in buttons:
+            
+            # Check menu first - close if clicked outside
+            if current_building_menu:
+                mx, my = mouse_pos
+                menu = current_building_menu
+                
+                # If clicked outside menu, close it
+                if not (menu.location[0] <= mx <= menu.location[0] + menu.dimensions[0] and
+                        menu.location[1] <= my <= menu.location[1] + menu.dimensions[1]):
+                    current_building_menu = None
+                else:
+                    continue
+            
+            # Then handle button clicks
+            for button in map_buttons:
                 if button.held:
                     button.held = False
                     if button.visible and button.check_click(mouse_pos):
                         handle_button(button.id, objects)
                     
-        
+    
+    # Camera controls (smooth movement)
+    keys = pygame.key.get_pressed()
+    camera_speed = 5
+    if keys[pygame.K_w]: camera_offset[1] -= camera_speed  # Pan up
+    if keys[pygame.K_s]: camera_offset[1] += camera_speed  # Pan down
+    if keys[pygame.K_a]: camera_offset[0] -= camera_speed  # Pan left
+    if keys[pygame.K_d]: camera_offset[0] += camera_speed  # Pan right
+    
+    # Clamp camera to keep map visible (at least 50% of screen should show map)
+    screen_width = screen.get_width()
+    screen_height = screen.get_height()
+    map_size_grid = 75  # Map is 75x75 grid
+    map_size_world = map_size_grid * 10 * zoom_level  # World pixels at current zoom
+    
+    # Allow panning with margin: map edge can go up to 50% off screen
+    margin_x = screen_width * 0.25
+    margin_y = screen_height * 0.25
+    
+    # Clamp camera offset
+    # Min: don't pan too far left/up (map right/bottom edge stays on screen)
+    # Max: don't pan too far right/down (map left/top edge stays on screen)
+    camera_offset[0] = max(-margin_x, min(camera_offset[0], map_size_world - screen_width + margin_x))
+    camera_offset[1] = max(-margin_y, min(camera_offset[1], map_size_world - screen_height + margin_y))
+    
     mouse_pos = pygame.mouse.get_pos()
     mouse_pressed = pygame.mouse.get_pressed()[0]  # Left button
 
-    for button in buttons:
+    for button in map_buttons:
         is_hovering = button.check_click(mouse_pos)
         is_held = is_hovering and mouse_pressed
         if button.visible:
             button.color = button.pressed_color if is_held else button.normal_color
     draw_board(screen, structures, floor, mode) 
-    if active_menu:
-        active_menu.render(screen)
+    if current_building_menu:
+        current_building_menu.render(screen)
     pygame.display.flip()
     clock.tick(60)  
 
