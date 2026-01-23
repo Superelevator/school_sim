@@ -84,7 +84,7 @@ class Text():
 
 
 class Block():
-    def __init__(self, structure, location, dimensions, color, displayed, absolute=False, opacity=255, outline_width=0, outline_color=(0, 0, 0)):
+    def __init__(self, structure, location, dimensions, color, displayed, absolute=False, opacity=255, outline_width=0, outline_color=(0, 0, 0), block_id=None):
         self.structure = structure
         self.location = location
         self.dimensions = dimensions
@@ -94,6 +94,7 @@ class Block():
         self.opacity = opacity  # 0 (transparent) to 255 (opaque)
         self.outline_width = outline_width  # 0 = no outline
         self.outline_color = outline_color  # Color of outline
+        self.block_id = block_id
     def render(self, screen):
         # Apply camera offset only if not absolute positioning
         if self.absolute:
@@ -751,7 +752,166 @@ class Room():
         self.parent_building = parent_building
         self.identity = identity
     
+
+def create_absolute_blocks(buildings):
+    absolute_menus = {"buildings": {"menus": [], "layout_menus": []}}
+    absolute_buttons = {"buildings": {"buttons": []}}
+    for building in buildings:
+        # Buttons
+        layout_button = Button(label="Layout", label_size=10, color=(20, 90, 20), id=f"building_layout_{building.name}", location=(690, 560), dimensions=(50, 30), object=None, typing=False, visible=True, font_name="helvetica", absolute=True, text_color=(0, 0, 0), outline_width=2, outline_color=(200, 200, 20))
+
+        absolute_buttons["buildings"]["buttons"].append(layout_button)
     
+        # Menus
+        # Building popup menu
+        location = (250, 500)
+        
+        building_name_structure = [
+            [Text(building.name, (0, 0, 0), (location[0]+10, location[1]+10), 30, "arial", absolute=True)]
+        ]
+        building_name_block = Block(structure=building_name_structure,
+            location=location,
+            dimensions=(500, 50),
+            color=(20, 90, 20),
+            displayed=True,
+            absolute=True, opacity = 200)
+
+
+        building_information_structure = [
+            [Text(f"Subject: {building.subject}", (0, 0, 0), (location[0]+10, location[1] + 60), 15, "helvetica", absolute=True)],
+            [Text(f"Floors: {building.floors}", (0, 0, 0), (location[0]+10, location[1] + 75), 15, "helvetica", absolute=True)],
+            [layout_button]]
+        building_information_block = Block(structure=building_information_structure,
+            location=(location[0], location[1] + 50),
+            dimensions=(500, 180),
+            color=(10, 70, 10),
+            displayed=True, absolute=True, opacity = 255, outline_width=2, outline_color=(200, 200, 20))
+        building_menu_structure = [
+            [building_name_block],
+            [building_information_block]
+        ]
+        building_menu_block = Block(structure=building_menu_structure,
+            location=(location[0], location[1]),
+            dimensions=(500, 230),
+            color=(20, 90, 20),
+            displayed=True, absolute=True, opacity = 0, block_id=f"building_{building.name}")
+        
+        absolute_menus["buildings"]["menus"].append(building_menu_block)
+        absolute_buttons["buildings"]["buttons"].append(building_information_block)
+    # Layout menu
+    # Create a layout menu for each building that shows its physical layout with room buttons.
+    for building in buildings:
+        # Layout menu configuration
+        layout_screen_location = (70, 70)
+        layout_screen_size = (610, 610)  # Leaves some margin on the 750x750 display
+
+        # Find building actual size (width, height) in tiles or units
+        width, height = building.dimensions if hasattr(building, 'dimensions') else (10, 10)
+        if width == 0 or height == 0:
+            width, height = (10, 10)
+
+        # Determine scaling factors to fit the building into the layout menu area
+        scale_x = (layout_screen_size[0] - 60) / width
+        scale_y = (layout_screen_size[1] - 60) / height
+        scale = min(scale_x, scale_y)  # Uniform scaling (preserve aspect ratio)
+        margin_x = (layout_screen_size[0] - width * scale) // 2
+        margin_y = (layout_screen_size[1] - height * scale) // 2
+
+        building_draw_x = layout_screen_location[0] + margin_x
+        building_draw_y = layout_screen_location[1] + margin_y
+
+        # Rectangle representing the building shell
+        building_rect_block = Block(
+            structure=[],
+            location=(building_draw_x, building_draw_y),
+            dimensions=(width * scale, height * scale),
+            color=(160, 200, 160),
+            displayed=True, absolute=True, opacity=240, outline_width=4, outline_color=(40, 60, 40)
+        )
+
+        # Room buttons: Find rooms according to building.rooms or fallback
+        room_buttons = []
+        if hasattr(building, "rooms") and building.rooms:
+            for idx, room in enumerate(building.rooms):
+                # Each room should have a location and size within the building
+                rx, ry = getattr(room, "location", (0, 0))
+                rw, rh = getattr(room, "dimensions", (2, 2))
+
+                # Scale to fit layout area
+                room_x = building_draw_x + rx * scale
+                room_y = building_draw_y + ry * scale
+                room_w = rw * scale
+                room_h = rh * scale
+
+                room_button = Button(
+                    label=getattr(room, "name", f"Room {idx+1}"),
+                    label_size=14,
+                    color=(120, 170, 190),
+                    id=f"room_{building.name}_{idx}",
+                    location=(room_x, room_y),
+                    dimensions=(room_w, room_h),
+                    object=room,
+                    typing=False,
+                    visible=True,
+                    font_name="helvetica",
+                    text_color=(0, 0, 0),
+                    outline_width=2,
+                    outline_color=(60, 90, 120),
+                    absolute=True
+                )
+                room_buttons.append(room_button)
+        else:
+            # Fallback: show sample rooms in a grid
+            fallback_count_x = max(width // 3, 1)
+            fallback_count_y = max(height // 3, 1)
+            for i in range(fallback_count_y):
+                for j in range(fallback_count_x):
+                    r_w = (width / fallback_count_x) * scale * 0.95
+                    r_h = (height / fallback_count_y) * scale * 0.95
+                    r_x = building_draw_x + j * (width * scale) / fallback_count_x + scale * 0.025
+                    r_y = building_draw_y + i * (height * scale) / fallback_count_y + scale * 0.025
+                    room_button = Button(
+                        label=f"Room {i*fallback_count_x + j + 1}",
+                        label_size=14,
+                        color=(120, 170, 190),
+                        id=f"room_{building.name}_fake_{i}_{j}",
+                        location=(r_x, r_y),
+                        dimensions=(r_w, r_h),
+                        object=None,
+                        typing=False,
+                        visible=True,
+                        font_name="helvetica",
+                        text_color=(0, 0, 0),
+                        outline_width=2,
+                        outline_color=(60, 90, 120),
+                        absolute=True
+                    )
+                    room_buttons.append(room_button)
+
+        # Label above the layout
+        title_block = Block(
+            structure=[[Text(f"{building.name} Layout", (0, 0, 0), (layout_screen_location[0]+10, layout_screen_location[1]-40), 30, "arial", absolute=True)]],
+            location=(layout_screen_location[0], layout_screen_location[1]-50),
+            dimensions=(layout_screen_size[0], 40),
+            color=(220, 230, 220),
+            displayed=True, absolute=True, opacity=0
+        )
+
+        # Compose all together: Background, Title, Building Rectangle, Room Buttons
+        layout_menu_block = Block(
+            structure=[
+                [title_block],
+                [building_rect_block],
+                room_buttons  # Flat: let main Block render child buttons as siblings at root
+            ],
+            location=layout_screen_location,
+            dimensions=layout_screen_size,
+            color=(240, 240, 220),
+            displayed=True, absolute=True, opacity=246, block_id=f"layout_menu_{building.name}", outline_width=4, outline_color=(40, 60, 40)
+        )
+
+        absolute_menus["buildings"]["layout_menus"].append(layout_menu_block)
+    return absolute_menus, absolute_buttons
 
 def gen_board(grid_size, scale):
     cols, rows = grid_size
@@ -909,63 +1069,29 @@ def handle_button(id, objects):
                 if building.button.id == id:
                     subject = building
                     break
-            layout_block = Block(structure=[[Text(f"Layout: {subject.name}", (0, 0, 0), (0, 0), 15, "helvetica", absolute=True)]],
-                location=(0, 0),
-                dimensions=(500, 50),
-                color=(20, 90, 20),
-                displayed=True,
-                absolute=True, opacity = 200)
-            
+            for i in objects[3][0]["buildings"]["layout_menus"]:
+                if i.block_id == f"layout_menu_{subject.name}":
+                    menu = i
+                    break
+            if current_building_menu and current_building_menu.block_id == f"layout_menu_{subject.name}":
+                current_building_menu = None  # Close menu
+            else:
+                current_building_menu = menu  # Open new menu
             return
-        for building in objects[0][0]:
-            if building.button.id == id:
-                subject = building
-                break
-        # location = (subject.location[0] * 10 - 150 + subject.dimensions[0] * 10 / 2, subject.location[1] * 10 - 125)
-        # if location[0] < 0:
-        #     location = (0, location[1])
-        # if location[0] > screen.get_width() - 300:
-        #     location = (screen.get_width() - 300, location[1])
-        # if location[1] < 0:
-        #     location = (location[0], 0)
-        location = (250, 500)
-        
-        building_name_structure = [
-            [Text(subject.name, (0, 0, 0), (location[0]+10, location[1]+10), 30, "arial", absolute=True)]
-        ]
-        building_name_block = Block(structure=building_name_structure,
-            location=location,
-            dimensions=(500, 50),
-            color=(20, 90, 20),
-            displayed=True,
-            absolute=True, opacity = 200)
-
-        building_information_structure = [
-            [Text(f"Subject: {subject.subject}", (0, 0, 0), (location[0]+10, location[1] + 60), 15, "helvetica", absolute=True)],
-            [Text(f"Floors: {subject.floors}", (0, 0, 0), (location[0]+10, location[1] + 75), 15, "helvetica", absolute=True)],
-            [Button(label="Layout", label_size=10, color=(20, 90, 20), id=f"building_layout_{building.name}", location=(690, 560), dimensions=(50, 30), object=None, typing=False, visible=True, font_name="helvetica", absolute=True, text_color=(0, 0, 0), outline_width=2, outline_color=(200, 200, 20))]
-            ]
-        building_information_block = Block(structure=building_information_structure,
-            location=(location[0], location[1] + 50),
-            dimensions=(500, 180),
-            color=(10, 70, 10),
-            displayed=True, absolute=True, opacity = 255, outline_width=2, outline_color=(200, 200, 20))
-        
-        preliminary_structure = [
-            [building_name_block],
-            [building_information_block]
-        ]
-        menu = Block(structure=preliminary_structure, 
-            location=(location[0], location[1]), 
-            dimensions=(500, 225), 
-            color=(30, 100, 30), 
-            displayed=True,
-            absolute=True, opacity = 0)
-        if current_building_menu and current_building_menu.structure[0][0].structure[0][0].text == f"{subject.name}":
-            current_building_menu = None  # Close menu
         else:
-            current_building_menu = menu  # Open new menu
-        return menu
+            for building in objects[0][0]:
+                if building.button.id == id:
+                    subject = building
+                    break
+            for i in objects[3][0]["buildings"]["menus"]:
+                if i.block_id == f"building_{subject.name}":
+                    menu = i
+                    break
+            if current_building_menu and current_building_menu.structure[0][0].structure[0][0].text == f"{subject.name}":
+                current_building_menu = None  # Close menu
+            else:
+                current_building_menu = menu  # Open new menu
+            return 
 
 
 # Camera system
@@ -1017,17 +1143,20 @@ def initialize_game():
     green_spaces = place_green_spaces(heat_map, buildings)
     structures = [buildings, green_spaces]
     building_labels = []
-    # Menus, buttons
-    absolute_menus = dict()
-    absolute_buttons = dict()
-    absolute_objects = [absolute_menus, absolute_buttons]
+
 
     # Further information about buildings
     connect_buildings(buildings)
     assign_buildings(buildings)
     make_building_corridors(buildings)
     make_rooms(buildings)
+
+    # Set up map
     map_buttons = create_building_buttons(buildings, 10)
+
+    # Overall UI elements
+    absolute_objects = create_absolute_blocks(buildings)
+
     return structures, map_buttons, building_labels, absolute_objects
 objects = initialize_game()
 running = True
@@ -1102,13 +1231,13 @@ while running:
     if keys[pygame.K_a]: camera_offset[0] -= camera_speed  # Pan left
     if keys[pygame.K_d]: camera_offset[0] += camera_speed  # Pan right
     
-    # Clamp camera to keep map visible (at least 50% of screen should show map)
+    # Clamp camera to keep map visible
     screen_width = screen.get_width()
     screen_height = screen.get_height()
     map_size_grid = 75  # Map is 75x75 grid
     map_size_world = map_size_grid * 10 * zoom_level  # World pixels at current zoom
     
-    # Allow panning with margin: map edge can go up to 50% off screen
+    # Allow panning with margin
     margin_x = screen_width * 0.25
     margin_y = screen_height * 0.25
     
